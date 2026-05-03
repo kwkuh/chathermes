@@ -34,7 +34,7 @@ async function hetzner(token: string, path: string, init?: RequestInit) {
 
 export async function listServerTypes(token: string) {
   const r = await hetzner(token, "/server_types?per_page=50");
-  // Filter to recommended sizes for ChatHermes (≥2GB RAM)
+  // Filter to recommended sizes for ChatHermes
   return (r.server_types || [])
     .filter((s: any) => s.memory >= 2)
     .map((s: any) => ({

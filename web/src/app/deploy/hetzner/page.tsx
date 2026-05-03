@@ -52,7 +52,7 @@ export default function DeployHetznerPage() {
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "Failed to load Hetzner catalogue");
       setCatalogue(j);
-      // Sensible default: smallest 4GB RAM
+      // Sensible default — admin can override
       const default_st = j.server_types.find((s: ServerType) => s.memory_gb >= 4)?.name || j.server_types[0]?.name;
       const default_loc = j.locations.find((l: Location) => l.name === "nbg1")?.name || j.locations[0]?.name;
       setConfig((c) => ({ ...c, server_type: default_st, location: default_loc }));
