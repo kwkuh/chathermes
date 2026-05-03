@@ -55,7 +55,15 @@ done
 echo "  + no production IPs leaked"
 
 echo "-- env hygiene --"
-test ! -f orchestrator/.env && echo "  + no real .env shipped" || { echo "  X .env should not be in repo"; exit 1; }
+# Check git tracking, not file existence: a local user-created .env is fine, only fails if committed
+if [ -d .git ] && git ls-files --error-unmatch orchestrator/.env >/dev/null 2>&1; then
+  echo "  X orchestrator/.env is tracked by git (should be gitignored)"
+  exit 1
+elif [ -f orchestrator/.env ]; then
+  echo "  + orchestrator/.env exists locally but not tracked (OK)"
+else
+  echo "  + no .env in repo"
+fi
 test -f orchestrator/.env.example && echo "  + .env.example present" || { echo "  X .env.example MISSING"; exit 1; }
 test ! -f data/orchestrator.db && echo "  + no production database shipped" || { echo "  X database should not be in repo"; exit 1; }
 
