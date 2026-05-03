@@ -212,7 +212,7 @@ function Workspace() {
         <WorkspaceStatusBar activeModel={activeModel} modelLabel={activeModelLabel} streaming={streaming} />
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
-            <div className="h-full min-h-[60vh] flex flex-col items-center justify-center px-7 text-center">
+            <div className="h-full min-h-[55vh] sm:min-h-[60vh] flex flex-col items-center justify-center px-4 sm:px-7 text-center">
               <Image src="/illustrations/mascot-full.png" alt="" width={140} height={140} className="w-[96px] h-[96px] mb-5 opacity-90" />
               <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.22em] text-amber mb-3">
                 — {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
@@ -227,7 +227,7 @@ function Workspace() {
               <p className="text-paper-dim mt-3 text-[15.5px] max-w-[44ch]">
                 Drop a task, close the tab, come back to a finished thing. 40+ tools, persistent memory, multi-model.
               </p>
-              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-[640px] w-full">
+              <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-[640px] w-full px-2 sm:px-0">
                 {[
                   { i: "🔎", t: "Research", p: "Research the latest on multi-agent reasoning and summarize the 5 most cited papers from 2025." },
                   { i: "🛠️", t: "Build", p: "Build me a landing page for a domain registrar called \"reg\" — minimal, monospace, dark mode." },
@@ -256,7 +256,7 @@ function Workspace() {
         <div className="px-3 sm:px-5 pb-3 sm:pb-5 pt-2 shrink-0 relative" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0))" }}>
           <div className="max-w-[720px] mx-auto relative">
             {showModelPicker && (
-              <div className="absolute bottom-[calc(100%+8px)] left-3 w-[280px] sm:w-[320px] max-h-[400px] overflow-y-auto bg-ink-soft border border-ink-line rounded-xl shadow-2xl z-30">
+              <div className="absolute bottom-[calc(100%+8px)] left-3 right-3 sm:right-auto w-auto sm:w-[320px] max-h-[60vh] sm:max-h-[400px] overflow-y-auto bg-ink-soft border border-ink-line rounded-xl shadow-2xl z-30">
                 <div className="px-4 py-2.5 border-b border-ink-line font-[family-name:var(--font-mono)] text-[11.5px] text-paper-faint uppercase tracking-[0.18em]">Pick a model</div>
                 {availableModels.length === 0 ? (
                   <div className="px-4 py-6 text-center text-paper-faint text-[14px]">No models. Admin: bootstrap a provider.</div>
@@ -282,12 +282,12 @@ function Workspace() {
                 onChange={(e) => setDraft(e.target.value)} onKeyDown={onKey}
                 disabled={streaming}
                 placeholder="Send a message…"
-                className="w-full bg-transparent px-5 pt-4 pb-12 text-paper text-[15px] leading-[1.5] resize-none outline-none placeholder:text-paper-faint disabled:opacity-60"
+                className="w-full bg-transparent px-3.5 sm:px-5 pt-3.5 sm:pt-4 pb-12 text-paper text-[16px] sm:text-[15px] leading-[1.5] resize-none outline-none placeholder:text-paper-faint disabled:opacity-60"
                 style={{ minHeight: "82px", maxHeight: "220px" }}
               />
-              <div className="flex items-center justify-between px-3 pb-3 -mt-9">
+              <div className="flex items-center justify-between px-2 sm:px-3 pb-2.5 sm:pb-3 -mt-10 sm:-mt-9">
                 <div className="flex items-center gap-1">
-                  <button className="p-2 rounded-md text-paper-faint hover:text-paper hover:bg-ink-line/40 transition" aria-label="Attach"><Paperclip size={14} /></button>
+                  <button className="p-2.5 rounded-md text-paper-faint hover:text-paper hover:bg-ink-line/40 transition" aria-label="Attach"><Paperclip size={15} /></button>
                   <button
                     type="button"
                     onClick={() => setShowModelPicker(!showModelPicker)}
@@ -299,15 +299,15 @@ function Workspace() {
                   </button>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => setRightOpen(!rightOpen)} className="lg:hidden p-2 rounded-md text-paper-faint hover:text-paper hover:bg-ink-line/40" aria-label="Workspace">
-                    <Wrench size={14} />
+                  <button onClick={() => setRightOpen(!rightOpen)} className="lg:hidden p-2.5 rounded-md text-paper-faint hover:text-paper hover:bg-ink-line/40" aria-label="Workspace">
+                    <Wrench size={16} />
                   </button>
                   <button
                     onClick={() => send()} disabled={!draft.trim() || streaming}
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber text-ink hover:bg-amber-soft disabled:bg-ink-line disabled:text-paper-faint disabled:cursor-not-allowed transition-all"
+                    className="inline-flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-amber text-ink hover:bg-amber-soft disabled:bg-ink-line disabled:text-paper-faint disabled:cursor-not-allowed transition-all shadow-sm"
                     aria-label="Send"
                   >
-                    <ArrowUp size={14} strokeWidth={2.4} />
+                    <ArrowUp size={16} strokeWidth={2.4} />
                   </button>
                 </div>
               </div>

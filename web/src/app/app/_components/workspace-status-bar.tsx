@@ -73,7 +73,7 @@ export function WorkspaceStatusBar({ activeModel, modelLabel, streaming }: Props
   const Icon = chip.icon;
 
   return (
-    <div className="px-3 sm:px-7 pt-2.5 pb-2 border-b border-ink-line/40 bg-gradient-to-b from-ink/40 to-transparent overflow-x-auto scrollbar-hide">
+    <div className="px-3 sm:px-7 pt-2 pb-1.5 sm:pt-2.5 sm:pb-2 border-b border-ink-line/40 bg-gradient-to-b from-ink/40 to-transparent overflow-x-auto scrollbar-hide">
       <div className="max-w-[1180px] mx-auto flex items-center gap-2 sm:gap-2.5 flex-nowrap sm:flex-wrap whitespace-nowrap">
         {/* Live activity dot */}
         <div className="flex items-center gap-1.5">
