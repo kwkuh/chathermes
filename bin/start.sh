@@ -83,9 +83,9 @@ PROXY_PID=$(cat "$PID_DIR/proxy.pid")
 WEB_PID=$(cat "$PID_DIR/web.pid")
 
 ALIVE=0
-kill -0 "$ORCH_PID" 2>/dev/null && ((ALIVE++)) || true
-kill -0 "$PROXY_PID" 2>/dev/null && ((ALIVE++)) || true
-kill -0 "$WEB_PID" 2>/dev/null && ((ALIVE++)) || true
+kill -0 "$ORCH_PID" 2>/dev/null && ALIVE=$((ALIVE + 1)) || true
+kill -0 "$PROXY_PID" 2>/dev/null && ALIVE=$((ALIVE + 1)) || true
+kill -0 "$WEB_PID" 2>/dev/null && ALIVE=$((ALIVE + 1)) || true
 
 echo ""
 if [ "$ALIVE" -eq 3 ]; then

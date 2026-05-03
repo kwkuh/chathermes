@@ -30,7 +30,7 @@ for svc in orch proxy web; do
       pkill -TERM -P "$PID" 2>/dev/null || true
       kill -TERM "$PID" 2>/dev/null
       echo -e "  ${GREEN}+${NC} stopped ${svc} (pid $PID + children)"
-      ((stopped++))
+      stopped=$((stopped + 1))
       sleep 0.3
       # Force-kill anything still alive
       if kill -0 "$PID" 2>/dev/null; then
