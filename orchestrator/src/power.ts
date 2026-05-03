@@ -354,11 +354,25 @@ export function defineCron(j: CronJob) { JOBS.push(j); }
 export function startCron() {
   if (cronStarted) return;
   cronStarted = true;
+  // Defensive: ensure cron_jobs table exists (in case migrations missed it)
+  try {
+    db.run("CREATE TABLE IF NOT EXISTS cron_jobs (name TEXT PRIMARY KEY, last_run_at INTEGER, last_status TEXT, last_error TEXT, enabled INTEGER NOT NULL DEFAULT 1)");
+    db.run("CREATE TABLE IF NOT EXISTS notifications (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, body TEXT, url TEXT, read_at INTEGER, created_at INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS outbound_webhooks (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, url TEXT NOT NULL, secret TEXT NOT NULL, events TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, last_delivery_at INTEGER, last_delivery_status TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS outbound_webhook_log (id TEXT PRIMARY KEY, webhook_id TEXT NOT NULL, event_type TEXT NOT NULL, payload TEXT NOT NULL, status_code INTEGER, response_body TEXT, attempt INTEGER NOT NULL DEFAULT 1, next_retry_at INTEGER, delivered INTEGER NOT NULL DEFAULT 0, error TEXT, created_at INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS email_log (id TEXT PRIMARY KEY, user_id TEXT, to_email TEXT NOT NULL, template TEXT NOT NULL, subject TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', resend_id TEXT, error TEXT, meta TEXT, created_at INTEGER NOT NULL, delivered_at INTEGER, opened_at INTEGER, clicked_at INTEGER, bounced_at INTEGER, complained_at INTEGER)");
+    db.run("CREATE TABLE IF NOT EXISTS credit_balances (user_id TEXT PRIMARY KEY, balance INTEGER NOT NULL DEFAULT 0, monthly_grant INTEGER NOT NULL DEFAULT 0, granted_this_period_at INTEGER NOT NULL DEFAULT 0, lifetime_consumed INTEGER NOT NULL DEFAULT 0, lifetime_topped_up INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS credit_transactions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, delta INTEGER NOT NULL, reason TEXT NOT NULL, ref_id TEXT, meta TEXT, balance_after INTEGER NOT NULL, created_at INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS login_attempts (id TEXT PRIMARY KEY, email TEXT NOT NULL, ip TEXT, user_agent TEXT, success INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS rate_limit_buckets (scope TEXT NOT NULL, key TEXT NOT NULL, tokens REAL NOT NULL, refilled_at INTEGER NOT NULL, PRIMARY KEY (scope, key))");
+  } catch (e) { console.error("[startCron:bootstrap]", e); }
   // Light scheduler: every 30s, check which jobs are due
   setInterval(async () => {
     const now = Date.now();
     for (const job of JOBS) {
-      const row = db.query("SELECT * FROM cron_jobs WHERE name = ?").get(job.name) as any;
+      let row: any;
+      try { row = db.query("SELECT * FROM cron_jobs WHERE name = ?").get(job.name) as any; }
+      catch (e) { console.error("[cron:query]", e); continue; }
       const lastRun = row?.last_run_at ?? 0;
       const enabled = row ? row.enabled : 1;
       if (!enabled) continue;

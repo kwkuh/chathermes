@@ -7,7 +7,12 @@
 import { Database } from "bun:sqlite";
 import { randomUUID } from "node:crypto";
 
-const DB_PATH = process.env.DB_PATH ?? "./data/orchestrator.db";
+import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
+const DATA_ROOT = process.env.DATA_ROOT ?? "./data";
+const DB_PATH = process.env.DB_PATH ?? `${DATA_ROOT}/orchestrator.db`;
+// Auto-create parent dir if missing (fresh installs do not crash)
+try { mkdirSync(dirname(DB_PATH), { recursive: true }); } catch {}
 
 export const db = new Database(DB_PATH, { create: true });
 db.exec("PRAGMA journal_mode = WAL");
@@ -395,6 +400,117 @@ db.exec(`
     last_used_at INTEGER,
     created_at INTEGER NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS cron_jobs (
+    name TEXT PRIMARY KEY,
+    last_run_at INTEGER,
+    last_status TEXT,
+    last_error TEXT,
+    enabled INTEGER NOT NULL DEFAULT 1
+  );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT,
+    url TEXT,
+    read_at INTEGER,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC);
+
+  CREATE TABLE IF NOT EXISTS outbound_webhooks (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    secret TEXT NOT NULL,
+    events TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at INTEGER NOT NULL,
+    last_delivery_at INTEGER,
+    last_delivery_status TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_webhooks_user ON outbound_webhooks(user_id);
+
+  CREATE TABLE IF NOT EXISTS outbound_webhook_log (
+    id TEXT PRIMARY KEY,
+    webhook_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    status_code INTEGER,
+    response_body TEXT,
+    attempt INTEGER NOT NULL DEFAULT 1,
+    next_retry_at INTEGER,
+    delivered INTEGER NOT NULL DEFAULT 0,
+    error TEXT,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_wh_log_webhook ON outbound_webhook_log(webhook_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_wh_log_retry ON outbound_webhook_log(next_retry_at) WHERE delivered = 0;
+
+  CREATE TABLE IF NOT EXISTS email_log (
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
+    to_email TEXT NOT NULL,
+    template TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'queued',
+    resend_id TEXT,
+    error TEXT,
+    meta TEXT,
+    created_at INTEGER NOT NULL,
+    delivered_at INTEGER,
+    opened_at INTEGER,
+    clicked_at INTEGER,
+    bounced_at INTEGER,
+    complained_at INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_email_log_user ON email_log(user_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_email_log_resend ON email_log(resend_id);
+
+  CREATE TABLE IF NOT EXISTS credit_balances (
+    user_id TEXT PRIMARY KEY,
+    balance INTEGER NOT NULL DEFAULT 0,
+    monthly_grant INTEGER NOT NULL DEFAULT 0,
+    granted_this_period_at INTEGER NOT NULL DEFAULT 0,
+    lifetime_consumed INTEGER NOT NULL DEFAULT 0,
+    lifetime_topped_up INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS credit_transactions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    delta INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    ref_id TEXT,
+    meta TEXT,
+    balance_after INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_credit_tx_user ON credit_transactions(user_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_credit_tx_reason ON credit_transactions(user_id, reason, created_at DESC);
+
+  CREATE TABLE IF NOT EXISTS login_attempts (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    ip TEXT,
+    user_agent TEXT,
+    success INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_login_email ON login_attempts(email, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_login_ip ON login_attempts(ip, created_at DESC);
+
+  CREATE TABLE IF NOT EXISTS rate_limit_buckets (
+    scope TEXT NOT NULL,
+    key TEXT NOT NULL,
+    tokens REAL NOT NULL,
+    refilled_at INTEGER NOT NULL,
+    PRIMARY KEY (scope, key)
+  );
+
   CREATE TABLE IF NOT EXISTS quotas (
     user_id TEXT PRIMARY KEY,
     plan TEXT NOT NULL DEFAULT 'free',
@@ -870,6 +986,27 @@ export function emailStats(): { total: number; delivered: number; bounced: numbe
   const last_24h = (db.query("SELECT COUNT(*) AS n FROM email_log WHERE created_at >= ?").get(since) as any)?.n ?? 0;
   return { total, delivered, bounced, opened, complained, last_24h };
 }
+
+// ─── OSS install bootstrap: tables referenced in code but missing from older schema ───
+// Use db.run() per statement (db.exec multi-statement stops on first error in some Bun versions)
+try { db.run("CREATE TABLE IF NOT EXISTS cron_jobs ( name TEXT PRIMARY KEY, last_run_at INTEGER, last_status TEXT, last_error TEXT, enabled INTEGER NOT NULL DEFAULT 1 )"); } catch (e) { console.error("[migrate:cron_jobs]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS notifications ( id TEXT PRIMARY KEY, user_id TEXT NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, body TEXT, url TEXT, read_at INTEGER, created_at INTEGER NOT NULL )"); } catch (e) { console.error("[migrate:notifications]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS outbound_webhooks ( id TEXT PRIMARY KEY, user_id TEXT NOT NULL, url TEXT NOT NULL, secret TEXT NOT NULL, events TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, last_delivery_at INTEGER, last_delivery_status TEXT )"); } catch (e) { console.error("[migrate:outbound_webhooks]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS outbound_webhook_log ( id TEXT PRIMARY KEY, webhook_id TEXT NOT NULL, event_type TEXT NOT NULL, payload TEXT NOT NULL, status_code INTEGER, response_body TEXT, attempt INTEGER NOT NULL DEFAULT 1, next_retry_at INTEGER, delivered INTEGER NOT NULL DEFAULT 0, error TEXT, created_at INTEGER NOT NULL )"); } catch (e) { console.error("[migrate:outbound_webhook_log]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS email_log ( id TEXT PRIMARY KEY, user_id TEXT, to_email TEXT NOT NULL, template TEXT NOT NULL, subject TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', resend_id TEXT, error TEXT, meta TEXT, created_at INTEGER NOT NULL, delivered_at INTEGER, opened_at INTEGER, clicked_at INTEGER, bounced_at INTEGER, complained_at INTEGER )"); } catch (e) { console.error("[migrate:email_log]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS credit_balances ( user_id TEXT PRIMARY KEY, balance INTEGER NOT NULL DEFAULT 0, monthly_grant INTEGER NOT NULL DEFAULT 0, granted_this_period_at INTEGER NOT NULL DEFAULT 0, lifetime_consumed INTEGER NOT NULL DEFAULT 0, lifetime_topped_up INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL )"); } catch (e) { console.error("[migrate:credit_balances]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS credit_transactions ( id TEXT PRIMARY KEY, user_id TEXT NOT NULL, delta INTEGER NOT NULL, reason TEXT NOT NULL, ref_id TEXT, meta TEXT, balance_after INTEGER NOT NULL, created_at INTEGER NOT NULL )"); } catch (e) { console.error("[migrate:credit_transactions]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS login_attempts ( id TEXT PRIMARY KEY, email TEXT NOT NULL, ip TEXT, user_agent TEXT, success INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL )"); } catch (e) { console.error("[migrate:login_attempts]", e); }
+try { db.run("CREATE TABLE IF NOT EXISTS rate_limit_buckets ( scope TEXT NOT NULL, key TEXT NOT NULL, tokens REAL NOT NULL, refilled_at INTEGER NOT NULL, PRIMARY KEY (scope, key) )"); } catch (e) { console.error("[migrate:rate_limit_buckets]", e); }
+try { db.run("CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_webhooks_user ON outbound_webhooks(user_id)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_wh_log_webhook ON outbound_webhook_log(webhook_id, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_email_log_user ON email_log(user_id, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_email_log_resend ON email_log(resend_id)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_credit_tx_user ON credit_transactions(user_id, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_credit_tx_reason ON credit_transactions(user_id, reason, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_login_email ON login_attempts(email, created_at DESC)"); } catch {}
+try { db.run("CREATE INDEX IF NOT EXISTS idx_login_ip ON login_attempts(ip, created_at DESC)"); } catch {}
 
 export function findUserByEmail(email: string): User | null {
   const r = db.query("SELECT * FROM users WHERE email = ?").get(email) as User | undefined;
