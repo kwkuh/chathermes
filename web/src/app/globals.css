@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0B0A09;
+  --color-ink-soft: #14130F;
+  --color-ink-line: #25221C;
+  --color-ink-line-soft: #1B1813;
+  --color-paper: #F4EEDF;
+  --color-paper-soft: #E5DDC8;
+  --color-paper-dim: rgba(244, 238, 223, 0.58);
+  --color-paper-faint: rgba(244, 238, 223, 0.32);
+  --color-amber: #E8A547;
+  --color-amber-deep: #B07820;
+  --color-amber-soft: #F2BC6B;
+  --color-moss: #6E8C5A;
+  --color-rust: #C25434;
+  --color-plum: #6E4683;
+
+  --font-display: var(--font-instrument-serif), 'Newsreader', Georgia, serif;
+  --font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+@layer base {
+  html, body {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-amber);
+    color: var(--color-ink);
+  }
+  /* fine-grain paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      radial-gradient(rgba(244, 238, 223, 0.014) 1px, transparent 1px),
+      radial-gradient(at 50% 0%, rgba(232, 165, 71, 0.06) 0%, transparent 60%);
+    background-size: 3px 3px, 100% 100%;
+    mix-blend-mode: screen;
+  }
+  main, nav, footer, section { position: relative; z-index: 2; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.35; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1); }
+}
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+@keyframes caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.animate-caret { animation: caret 1.06s steps(1) infinite; }
+
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-3px, 0); }
+}
+
+/* Illustration bleed effects — fade edges into page so images don't look like uploads */
+.bleed-soft {
+  -webkit-mask-image: radial-gradient(ellipse 78% 78% at center, #000 55%, transparent 100%);
+          mask-image: radial-gradient(ellipse 78% 78% at center, #000 55%, transparent 100%);
+}
+.bleed-strong {
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 96%);
+          mask-image: radial-gradient(ellipse 70% 70% at center, #000 40%, transparent 96%);
+}
+.bleed-edge {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%),
+                      linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%),
+                      linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+          mask-composite: intersect;
+}
+
+/* Subtle drifting float animation for illustrations */
+@keyframes float-drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%      { transform: translateY(-4px) rotate(-0.3deg); }
+  66%      { transform: translateY(2px) rotate(0.2deg); }
+}
+.float-drift { animation: float-drift 9s ease-in-out infinite; }
+.float-slow  { animation: float-drift 14s ease-in-out infinite; }
+
+/* Grain overlay frame — wraps image, adds page-matching grain on top */
+.grain-frame { position: relative; }
+.grain-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(244, 238, 223, 0.08) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+/* Vignette dark — subtle inner shadow on light-bg illustrations to anchor them on dark page */
+.vignette-dark {
+  box-shadow: inset 0 0 80px 20px rgba(11, 10, 9, 0.55), inset 0 0 0 1px rgba(232, 165, 71, 0.08);
+}
+
+/* Halo glow — soft amber atmosphere behind illustration */
+.halo-amber {
+  filter: drop-shadow(0 20px 60px rgba(232, 165, 71, 0.18)) drop-shadow(0 0 80px rgba(232, 165, 71, 0.08));
+}
+.halo-warm {
+  filter: drop-shadow(0 30px 80px rgba(0, 0, 0, 0.5));
+}
+
+/* Animated gold conic-gradient border for chat input */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes glow-rotate {
+  to { --glow-angle: 360deg; }
+}
+.chat-glow-border {
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    rgba(232, 165, 71, 0.0) 5%,
+    rgba(232, 165, 71, 0.55) 18%,
+    rgba(244, 180, 88, 1) 28%,
+    rgba(255, 215, 130, 1) 32%,
+    rgba(244, 180, 88, 1) 36%,
+    rgba(232, 165, 71, 0.55) 46%,
+    rgba(232, 165, 71, 0.0) 60%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  padding: 2px;
+  animation: glow-rotate 6s linear infinite;
+  filter: drop-shadow(0 0 14px rgba(232, 165, 71, 0.45)) drop-shadow(0 0 30px rgba(232, 165, 71, 0.18));
+}
+.chat-glow-border.chat-glow-fast { animation-duration: 3s; filter: drop-shadow(0 0 20px rgba(232, 165, 71, 0.7)) drop-shadow(0 0 40px rgba(232, 165, 71, 0.3)); }
+
+/* Glowing dot/spark trail (decorative) */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.96); }
+  50%      { opacity: 1;   transform: scale(1.04); }
+}
+.glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+
+
+/* ─────────────────────────────────────────────────────
+   LIGHT MODE — warm paper aesthetic
+   Toggled via <html data-theme="light">
+   ───────────────────────────────────────────────────── */
+html[data-theme="light"] {
+  --color-ink: #F4EEDF;            /* page bg — warm cream, like a journal */
+  --color-ink-soft: #FBF5E5;       /* card bg — slightly lighter */
+  --color-ink-line: #D8CCAF;       /* hairline borders — warm tan */
+  --color-ink-line-soft: #E5DCC0;  /* softer dividers */
+  --color-paper: #1A1612;          /* primary text — warm near-black */
+  --color-paper-soft: #2A2520;
+  --color-paper-dim: rgba(26, 22, 18, 0.62);
+  --color-paper-faint: rgba(26, 22, 18, 0.40);
+  --color-amber: #C28323;           /* darker amber for contrast on light bg */
+  --color-amber-deep: #8B5E15;
+  --color-amber-soft: #E8A547;
+  --color-moss: #4F6B3D;
+  --color-rust: #A03914;
+  --color-plum: #5E3A6E;
+}
+
+/* Adjust ambient grain + radial wash for light mode */
+html[data-theme="light"] body::before {
+  background-image:
+    radial-gradient(rgba(26, 22, 18, 0.024) 1px, transparent 1px),
+    radial-gradient(at 50% 0%, rgba(194, 131, 35, 0.08) 0%, transparent 60%);
+  mix-blend-mode: multiply;
+}
+
+/* Selection in light */
+html[data-theme="light"] ::selection {
+  background: var(--color-amber);
+  color: #fff;
+}
+
+/* Smooth theme transition */
+html, body, * {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+
+/* Mobile: hide scrollbar on horizontally-scrollable chip rows */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

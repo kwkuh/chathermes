@@ -1,0 +1,13 @@
+{
+  "name": "ChatHermes",
+  "short_name": "ChatHermes",
+  "description": "The chat that doesn't end when you close the tab",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFAF6",
+  "theme_color": "#2B2B29",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
