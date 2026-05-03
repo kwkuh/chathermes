@@ -26,11 +26,17 @@ for svc in orch proxy web; do
   if [ -f "$PID_FILE" ]; then
     PID=$(cat "$PID_FILE")
     if kill -0 "$PID" 2>/dev/null; then
-      kill "$PID" 2>/dev/null && echo -e "  ${GREEN}+${NC} stopped ${svc} (pid $PID)" && ((stopped++))
+      # Kill children first (next-server is a child of bun start)
+      pkill -TERM -P "$PID" 2>/dev/null || true
+      kill -TERM "$PID" 2>/dev/null
+      echo -e "  ${GREEN}+${NC} stopped ${svc} (pid $PID + children)"
+      ((stopped++))
       sleep 0.3
-      # Force-kill if still alive
+      # Force-kill anything still alive
       if kill -0 "$PID" 2>/dev/null; then
-        kill -9 "$PID" 2>/dev/null && echo -e "  ${DIM}  force-killed ${svc}${NC}"
+        pkill -9 -P "$PID" 2>/dev/null || true
+        kill -9 "$PID" 2>/dev/null
+        echo -e "  ${DIM}  force-killed ${svc}${NC}"
       fi
     else
       echo -e "  ${DIM}- ${svc} (pid $PID) already dead${NC}"
@@ -38,6 +44,9 @@ for svc in orch proxy web; do
     rm -f "$PID_FILE"
   fi
 done
+
+# Note: we deliberately don't pkill -f "next-server" or similar wildcard sweeps —
+# that would also kill OTHER ChatHermes installs running on the same machine.
 
 echo ""
 if [ "$stopped" -gt 0 ]; then
