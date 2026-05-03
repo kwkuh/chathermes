@@ -2,7 +2,7 @@
 
 > The chat that doesn't end when you close the tab.
 
-**ChatHermes** is an open-source autonomous-agent SaaS, built on top of [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent) and Hermes 4. Drop a task, close the tab, come back to a finished thing — research, drafts, code, monitoring — pushed to your Telegram, deployed to a public URL, persisted in memory.
+**ChatHermes** is an open-source autonomous-agent SaaS, built on [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent) and [Moonshot AI's Kimi K2 Thinking](https://moonshot.ai) — the official sponsors of the Hermes Agent Creative Hackathon. Drop a task, close the tab, come back to a finished thing — research, drafts, code, monitoring — pushed to your Telegram, deployed to a public URL, persisted in memory.
 
 This repo is the source of [chathermes.com](https://chathermes.com). Self-host under [the ChatHermes Open Source License](./LICENSE.md), or [skip the setup](https://chathermes.com) and use the managed version.
 
@@ -12,6 +12,7 @@ A chatbot is a calculator. ChatHermes is a coworker.
 
 [![License: ChatHermes OSL (AGPL + Attribution)](https://img.shields.io/badge/license-AGPL_3.0_+_Attribution-amber.svg)](./LICENSE.md)
 [![Built on Hermes Agent](https://img.shields.io/badge/built_on-Hermes_Agent-9333ea.svg)](https://github.com/NousResearch/hermes-agent)
+[![Powered by Kimi K2](https://img.shields.io/badge/powered_by-Kimi_K2_Thinking-f59e0b.svg)](https://moonshot.ai)
 [![Hosted](https://img.shields.io/badge/hosted-chathermes.com-2B2B29.svg)](https://chathermes.com)
 
 ## Features
