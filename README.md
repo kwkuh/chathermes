@@ -139,4 +139,4 @@ PRs welcome. By contributing you agree your work is licensed under the [ChatHerm
 
 ---
 
-Made by [@kwkuh](https://x.com/kwkuh) in Jakarta. Solo. Thanks to Nous Research and Moonshot AI for shipping Hermes Agent and Kimi K2 in the open.
+Made by [@kwkuh](https://x.com/kwkuh) & [@supercryptolord](https://x.com/supercryptolord) in Jakarta. Thanks to Nous Research and Moonshot AI for shipping Hermes Agent and Kimi K2 in the open.

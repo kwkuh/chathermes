@@ -3,7 +3,7 @@
 ChatHermes
 Copyright (c) 2026 Getid, Inc. and ChatHermes contributors.
 
-Founder & lead engineer: [@kwkuh](https://x.com/kwkuh) · Jakarta.
+Built by [@kwkuh](https://x.com/kwkuh) & [@supercryptolord](https://x.com/supercryptolord) · Jakarta.
 
 This product includes software licensed under the ChatHermes Open Source License v1.0 (AGPL-3.0 with Required Attribution Addendum). See [LICENSE.md](./LICENSE.md).
 
