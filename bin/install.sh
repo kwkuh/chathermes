@@ -108,14 +108,14 @@ cd ..
 echo ""
 echo -e "${BOLD}[6/6]${NC} smoke test (boot orch for 8s, hit /api/status, kill)"
 
+ORCH_PORT="${ORCH_PORT:-7010}"
 cd orchestrator
-nohup bun run src/index.ts > /tmp/chathermes-smoke.log 2>&1 &
+PORT="$ORCH_PORT" nohup bun run src/index.ts > /tmp/chathermes-smoke.log 2>&1 &
 SMOKE_PID=$!
 cd ..
 
 # Wait for boot
 sleep 6
-ORCH_PORT="${ORCH_PORT:-7010}"
 
 if curl -fsS --max-time 3 "http://127.0.0.1:${ORCH_PORT}/api/status" > /tmp/chathermes-smoke-status.json 2>/dev/null; then
   if grep -q "operational" /tmp/chathermes-smoke-status.json; then
