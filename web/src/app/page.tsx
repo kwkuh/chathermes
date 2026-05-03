@@ -179,7 +179,7 @@ export default async function Landing() {
         <div className="mx-auto max-w-[1140px] px-7 flex justify-between flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2.5">
             <Image src="/illustrations/mascot-head.png" alt="" width={28} height={28} className="w-7 h-7 halo-amber" />
-            <span>© 2026 ChatHermes · by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-paper-dim hover:text-amber transition">@kwkuh</a></span>
+            <span>© 2026 ChatHermes · by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a></span>
           </div>
           <div className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em]">
             built on{" "}
