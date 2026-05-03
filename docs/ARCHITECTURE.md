@@ -28,13 +28,13 @@
               Per-tenant engine pool (127.0.0.1:7100+N)
                 Tenant A  :7101    Tenant B  :7102   ...
                 hermes-webui       hermes-webui
-                HERMES_HOME=/opt/chathermes/data/<tenant>/.hermes
+                HERMES_HOME=./data/<tenant>/.hermes
 
 ## Tenant model
 
 Per signup: orchestrator spawns one hermes-webui container with:
-- HERMES_HOME=/opt/chathermes/data/<tenant_id>/.hermes (volume mount)
-- HERMES_WEBUI_STATE_DIR=/opt/chathermes/data/<tenant_id>/state
+- HERMES_HOME=./data/<tenant_id>/.hermes (volume mount)
+- HERMES_WEBUI_STATE_DIR=./data/<tenant_id>/state
 - HERMES_WEBUI_PORT=<assigned> bound to 127.0.0.1
 - HERMES_WEBUI_PASSWORD=<random> (orchestrator stores in DB)
 - HERMES_WEBUI_DEFAULT_MODEL=kimi-k2 (or user choice)

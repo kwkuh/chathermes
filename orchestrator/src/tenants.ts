@@ -13,7 +13,7 @@ import * as DB from "./db";
 const ENGINE_UID = Number(process.env.ENGINE_UID ?? 1025);
 const ENGINE_GID = Number(process.env.ENGINE_GID ?? 1025);
 
-const DATA_ROOT = process.env.DATA_ROOT ?? "/opt/chathermes/data";
+const DATA_ROOT = process.env.DATA_ROOT ?? "./data";
 const PORT_START = Number(process.env.TENANT_PORT_START ?? 7100);
 const PORT_END = Number(process.env.TENANT_PORT_END ?? 7999);
 const ENGINE_IMAGE = process.env.ENGINE_IMAGE ?? "chathermes/engine:latest";

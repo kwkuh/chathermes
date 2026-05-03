@@ -22,7 +22,7 @@ export default async function AdminDatabase() {
         </div>
         <div className="bg-ink-soft border border-ink-line rounded-xl px-6 py-5">
           <div className="font-[family-name:var(--font-mono)] text-[12px] text-amber uppercase tracking-[0.18em] mb-2">— path</div>
-          <div className="font-[family-name:var(--font-mono)] text-[13.5px] text-paper mt-3 break-all">/opt/chathermes/data/orchestrator.db</div>
+          <div className="font-[family-name:var(--font-mono)] text-[13.5px] text-paper mt-3 break-all">./data/orchestrator.db</div>
           <div className="mt-3 text-[14px] text-paper-dim">Persistent. Survives restarts. Indexed on hot paths (user_id, created_at).</div>
         </div>
       </div>

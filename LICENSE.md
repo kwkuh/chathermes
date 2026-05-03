@@ -3,112 +3,56 @@
 Version 1.0, dated 2026-05-03.
 Copyright (c) 2026 Getid, Inc. and ChatHermes contributors.
 
-ChatHermes is free software released under the GNU Affero General Public
-License, version 3 (AGPL-3.0), with the **Required Attribution Addendum**
-described below. Together these constitute the "ChatHermes Open Source License".
+ChatHermes is free software released under the GNU Affero General Public License, version 3 (AGPL-3.0), with the **Required Attribution Addendum**, **Trademark Reservation**, and **Cloud Carve-Out** described below. Together these constitute the "ChatHermes Open Source License" (the "License").
 
 ---
 
 ## 1. Base license
 
-The full text of AGPL-3.0 applies. See the file `LICENSE-AGPL` in this
-repository, or https://www.gnu.org/licenses/agpl-3.0.txt.
+The full text of AGPL-3.0 applies. See https://www.gnu.org/licenses/agpl-3.0.txt.
 
 This means:
-- You may use, modify, and distribute ChatHermes for any purpose, including
-  commercial, on your own infrastructure or as a hosted service.
-- If you modify ChatHermes and let users interact with it over a network,
-  you must release your modifications under this same license.
+- You may use, modify, and distribute ChatHermes for any purpose, including commercial, on your own infrastructure or as a hosted service.
+- If you modify ChatHermes and let users interact with it over a network, you must release your modifications under this same License.
 
 ## 2. Required Attribution Addendum
 
-In addition to AGPL-3.0, all distributions and deployments — including
-modified versions and hosted services derived from ChatHermes — MUST satisfy
-the following attribution requirements:
+In addition to AGPL-3.0, all distributions and deployments — including modified versions and hosted services derived from ChatHermes — MUST satisfy the following attribution requirements:
 
 ### 2.1 Visible attribution
-Every page of the user interface that requires authentication, and every
-landing page, must display a visible "Powered by ChatHermes" link pointing
-to https://chathermes.com. The link must:
-- Be readable on the rendered page (no `display:none`, no zero opacity, no
-  `color: transparent`, no covering element).
-- Be a clickable hyperlink to https://chathermes.com.
-- Use the text "ChatHermes" or include the ChatHermes wordmark.
-
-A reference implementation is `web/src/app/_components/powered-by.tsx`. You
-may restyle it to match your visual identity but you may not remove it.
+Every page of the user interface that requires authentication, and every public-preview page, MUST display a visible "Powered by ChatHermes" link with `target="_blank" rel="noopener"` linking to `https://chathermes.com`.
 
 ### 2.2 Wire-level attribution
-Every HTTP response from the orchestrator MUST include the header
-`X-Powered-By: ChatHermes` (the version suffix is optional). Removal or
-modification of this header constitutes license breach.
+Every HTTP response from the orchestrator MUST include the header `X-Powered-By: ChatHermes/<version> (<repo-url>)`.
 
 ### 2.3 Source-level attribution
-Every distribution of ChatHermes source code or binary build MUST retain:
-- This `LICENSE.md` file
-- The `NOTICE.md` file
-- All copyright headers in source files
-- The `<meta name="generator" content="ChatHermes …">` tag in HTML output
+The file `orchestrator/src/_attribution.ts` MUST be present, unmodified in its identifying constants (CHATHERMES, POWERED_BY, ATTRIBUTION_HTML, FLOATING_BADGE_HTML), and imported by `orchestrator/src/index.ts` such that the runtime guard `attributionPresent()` is invoked at startup.
 
-### 2.4 Code-of-origin acknowledgement
-Forks may rename the product but the rebranded product's documentation
-must include, in a place a reasonable user would find ("About", footer,
-README), the sentence:
+### 2.4 Code-of-origin
+A `// Copyright (c) 2026 Getid, Inc. and ChatHermes contributors. Licensed under the ChatHermes Open Source License v1.0` header MUST appear at the top of every modified TypeScript file in `orchestrator/src/`.
 
-> "Built on ChatHermes — https://chathermes.com (ChatHermes Open Source License)."
+If the runtime guard detects tampering with the attribution module, the orchestrator will refuse to start. This is by design.
 
 ## 3. Trademark Reservation
 
-The names "ChatHermes" and "ChatHermes Cloud", the ChatHermes wordmark,
-mascot illustrations, and the chathermes.com domain are trademarks of
-Getid, Inc. They are NOT licensed by this agreement. You may NOT:
-- Use "ChatHermes" or any confusingly similar name as the product name
-  for a fork or derivative work.
-- Reproduce, redistribute, or modify the ChatHermes mascot or wordmark.
-- Use ChatHermes branding in a way that suggests official endorsement.
+The names "ChatHermes" and "ChatHermes.dev", the ChatHermes mascot illustration, and the trade dress of chathermes.com are reserved trademarks of Getid, Inc. They MAY NOT be used for forks, derivative works, competing services, or any deployment that is not a verbatim distribution of an official ChatHermes release.
 
-You ARE permitted to use the name "ChatHermes" in factual statements such
-as "Built on ChatHermes" or "Forked from ChatHermes".
+If you redistribute a modified version of ChatHermes, you MUST re-brand it (different name, different logo). The Required Attribution Addendum (linking back to chathermes.com) still applies.
 
 ## 4. Cloud Features Carve-Out
 
-Some features are operated only at https://chathermes.com and are NOT
-included in this open-source distribution. These include but are not
-limited to: model pricing intelligence, marketplace plugin registry,
-public discovery gallery, aggregate-memory machine learning, vector
-memory, real-time multiplayer collaboration, smart model routing,
-auto-scaling tenant orchestration, AI concierge onboarding, and
-compliance reporting tooling. The source code for these is owned by
-Getid, Inc. and is not subject to AGPL-3.0 or this license.
+The operational infrastructure of chathermes.com — including but not limited to: pre-pooled LLM API keys, the Hetzner Cloud account used to provision private agents on our managed pool, our Stripe and Resend accounts, our backup infrastructure, our DNS and CDN configuration, and our status page — is NOT distributed under this License. These are cloud-only assets we operate.
 
-See `docs/CLOUD_FEATURES.md` for the full split.
+This License grants you all rights to the SOURCE CODE in this repository. It does not grant you rights to chathermes.com's infrastructure, customer data, or operating practices.
 
 ## 5. Termination
 
-Failure to comply with section 2 (Required Attribution) or section 3
-(Trademark Reservation) automatically terminates your rights under this
-license. Termination does not affect users of products you previously
-shipped in compliance, but you may not ship new versions until the
-breach is cured.
+If you violate Section 2 (Required Attribution) or Section 3 (Trademark Reservation), your rights under this License terminate automatically. To restore them: cure the violation within 30 days of notice, and the rights are reinstated.
 
 ## 6. Disclaimer
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED. SEE AGPL-3.0 FOR THE FULL DISCLAIMER.
+This software is provided "as is", without warranty of any kind. See AGPL-3.0 §15 for the full disclaimer.
 
 ---
 
-## TL;DR for builders
-
-- ✅ Fork it. Modify it. Run it commercially.
-- ✅ Sell hosting based on it.
-- ✅ Build your own product on top of it.
-- ❌ Strip the "Powered by ChatHermes" link from the UI.
-- ❌ Remove the `X-Powered-By: ChatHermes` HTTP header.
-- ❌ Use the ChatHermes name or mascot for your fork.
-- ❌ Reuse our `cloud/` features (they're not in this repo anyway).
-
-We want you to build with ChatHermes. We just want everyone to know
-where it came from.
-
-— Getid, Inc.
+For questions about commercial licensing or trademark exceptions, contact: hello@chathermes.com.

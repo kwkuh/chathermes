@@ -7,7 +7,7 @@
 import { Database } from "bun:sqlite";
 
 const PORT = Number(process.env.HERMES_PROXY_PORT) || 19002;
-const DB_PATH = process.env.CHATHERMES_DB || "/opt/chathermes/data/orchestrator.db";
+const DB_PATH = process.env.CHATHERMES_DB || "./data/orchestrator.db";
 const UPSTREAM_MODEL = process.env.HERMES_UPSTREAM_MODEL || "Hermes-4-405B";
 const NOUS_URL = "https://inference-api.nousresearch.com/v1/chat/completions";
 // Fallback ONLY when caller sends no system message — orch always sends a careful one with tool definitions

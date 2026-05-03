@@ -131,7 +131,7 @@ ${envContent.split("\n").map((l) => "      " + l).join("\n")}
 
 runcmd:
   - systemctl enable --now docker
-  - mkdir -p /opt/chathermes/data
+  - mkdir -p ./data
   - cd /opt/chathermes
   - git clone ${repo} repo
   - cp -r repo/. .

@@ -3,7 +3,7 @@ import { Clock4, Plus, MoreHorizontal } from "lucide-react";
 
 const SCHEDULES = [
   { name: "Daily PR triage", cron: "weekdays at 8:00am GMT+7", target: "Telegram → @soeharyo", lastRun: "today 8:01am", status: "active" },
-  { name: "Weekly newsletter draft", cron: "Sundays at 10:00pm", target: "Email → soeharyo@gmail.com", lastRun: "yesterday", status: "active" },
+  { name: "Weekly newsletter draft", cron: "Sundays at 10:00pm", target: "Email → you@example.com", lastRun: "yesterday", status: "active" },
   { name: "BTC price alert", cron: "every 15 min, ping if Δ ≥ 5%", target: "Telegram", lastRun: "12 min ago", status: "active" },
   { name: "Monthly retrospective", cron: "1st of month at 6:00pm", target: "Email + Notion", lastRun: "Apr 1", status: "paused" },
 ];

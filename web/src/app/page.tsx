@@ -22,6 +22,7 @@ export default async function Landing() {
             <span>ChatHermes</span>
           </Link>
           <div className="flex items-center gap-7">
+            <Link href="/introducing" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">demo</Link>
             <a href="#how" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">how</a>
             <a href="#vs" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">vs chatgpt</a>
             <Link href={isAuthed ? "/app" : "/auth/login"} className="font-[family-name:var(--font-mono)] text-[12px] text-paper hover:text-amber transition-colors uppercase tracking-[0.12em]">

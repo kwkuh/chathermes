@@ -7,7 +7,7 @@
 import { Database } from "bun:sqlite";
 import { randomUUID } from "node:crypto";
 
-const DB_PATH = process.env.DB_PATH ?? "/opt/chathermes/data/orchestrator.db";
+const DB_PATH = process.env.DB_PATH ?? "./data/orchestrator.db";
 
 export const db = new Database(DB_PATH, { create: true });
 db.exec("PRAGMA journal_mode = WAL");
@@ -160,7 +160,7 @@ export type Tenant = {
 export const newId = () => randomUUID();
 export const now = () => Date.now();
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "soeharyo@gmail.com").split(",").map((s) => s.trim().toLowerCase());
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "").split(",").map((s) => s.trim().toLowerCase());
 
 export function upsertUser(email: string, name?: string): User {
   const existing = db.query("SELECT * FROM users WHERE email = ?").get(email) as User | undefined;
