@@ -117,7 +117,7 @@ export default function DocsPage() {
               </div>
             ))}
             <div className="pt-4 border-t border-ink-line/40">
-              <a href="https://github.com/chathermes/chathermes" target="_blank" rel="noopener" className="flex items-center gap-2 px-3 py-1.5 text-[12.5px] text-paper-dim hover:text-amber transition">
+              <a href="https://github.com/ai-co-id/chathermes" target="_blank" rel="noopener" className="flex items-center gap-2 px-3 py-1.5 text-[12.5px] text-paper-dim hover:text-amber transition">
                 <GitBranch size={12} />
                 <span>GitHub</span>
                 <ArrowUpRight size={11} className="ml-auto" />
@@ -149,7 +149,7 @@ export default function DocsPage() {
             <p>Three install paths. Pick one.</p>
             <H3>Option 1 — Docker Compose</H3>
             <p>The recommended path. One command, works on macOS, Linux, Windows / WSL.</p>
-            <Code>{`git clone https://github.com/chathermes/chathermes.git
+            <Code>{`git clone https://github.com/ai-co-id/chathermes.git
 cd chathermes
 ./bin/setup.sh           # interactive .env wizard (60s)
 docker compose up -d
@@ -377,12 +377,12 @@ if (sig !== expected) {
           <Section id="self-hosting" title="Self-hosting" kicker="— production checklist">
             <p>Before going live with self-hosted ChatHermes:</p>
             <ul>
-              <li><strong>HTTPS</strong> — set up nginx + Certbot. See <a href="https://github.com/chathermes/chathermes/blob/master/INSTALL.md" target="_blank" rel="noopener" className="link">INSTALL.md Path 3</a>.</li>
+              <li><strong>HTTPS</strong> — set up nginx + Certbot. See <a href="https://github.com/ai-co-id/chathermes/blob/master/INSTALL.md" target="_blank" rel="noopener" className="link">INSTALL.md Path 3</a>.</li>
               <li><strong>SESSION_SECRET</strong> — generate with <code>openssl rand -hex 32</code>. Don't reuse the example value.</li>
               <li><strong>ADMIN_EMAILS</strong> — set in <code>.env</code> to grant your email admin role on first signup.</li>
               <li><strong>Backups</strong> — set up cron to <code>sqlite3 .backup</code> the SQLite file daily, and rsync off-server.</li>
               <li><strong>Resend</strong> — verify your domain at <a href="https://resend.com/domains" target="_blank" rel="noopener" className="link">resend.com/domains</a> for magic links.</li>
-              <li><strong>Stripe</strong> — set up products + webhook endpoint. See <a href="https://github.com/chathermes/chathermes/blob/master/INSTALL.md" target="_blank" rel="noopener" className="link">INSTALL.md "Optional integrations"</a>.</li>
+              <li><strong>Stripe</strong> — set up products + webhook endpoint. See <a href="https://github.com/ai-co-id/chathermes/blob/master/INSTALL.md" target="_blank" rel="noopener" className="link">INSTALL.md "Optional integrations"</a>.</li>
               <li><strong>Hermes Agent native</strong> — for the <code>hermes-agent</code> model option, install <code>nous-hermes-agent</code> separately. The orchestrator's shared proxy works without it (proxies to Nous API directly).</li>
               <li><strong>Required Attribution</strong> — don't strip <code>_attribution.ts</code>. The runtime guard refuses to start without it. This is the license.</li>
             </ul>
@@ -438,7 +438,7 @@ if (sig !== expected) {
 
           <div className="mt-16 pt-8 border-t border-ink-line/40 flex items-center justify-between text-paper-faint text-[12.5px] font-[family-name:var(--font-mono)]">
             <span>ChatHermes Docs · v1.0 · by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@supercryptolord</a></span>
-            <a href="https://github.com/chathermes/chathermes" target="_blank" rel="noopener" className="hover:text-amber inline-flex items-center gap-1">
+            <a href="https://github.com/ai-co-id/chathermes" target="_blank" rel="noopener" className="hover:text-amber inline-flex items-center gap-1">
               Edit on GitHub <ArrowUpRight size={11} />
             </a>
           </div>

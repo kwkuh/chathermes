@@ -20,7 +20,7 @@ curl -X POST https://your-self-host.com/api/deploy/hetzner \
 ## Path 1 — Docker Compose (recommended for self-host, ~5 min)
 
 ```bash
-git clone https://github.com/chathermes/chathermes.git
+git clone https://github.com/ai-co-id/chathermes.git
 cd chathermes
 ./bin/setup.sh           # interactive .env wizard
 docker compose up -d
@@ -36,7 +36,7 @@ To stop: `docker compose down`. Data persists in `./data/`.
 Requires: Bun >= 1.3, Node >= 22 (for Next.js).
 
 ```bash
-git clone https://github.com/chathermes/chathermes.git
+git clone https://github.com/ai-co-id/chathermes.git
 cd chathermes
 
 ./bin/setup.sh           # interactive .env wizard

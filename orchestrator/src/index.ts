@@ -2179,9 +2179,9 @@ app.get("/api", (c) => c.json({
   description: "ChatHermes — the chat that doesn't end when you close the tab",
   version: "1.0.0",
   license: "ChatHermes Open Source License v1.0 (AGPL-3.0 + Required Attribution)",
-  source: "https://github.com/chathermes/chathermes",
+  source: "https://github.com/ai-co-id/chathermes",
   cloud: "https://chathermes.com",
-  docs: "https://github.com/chathermes/chathermes/blob/main/docs/ARCHITECTURE.md",
+  docs: "https://github.com/ai-co-id/chathermes/blob/main/docs/ARCHITECTURE.md",
   built_on: { hermes_agent: "https://github.com/NousResearch/hermes-agent", kimi: "https://moonshot.ai" },
 }));
 

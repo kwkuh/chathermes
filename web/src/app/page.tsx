@@ -327,7 +327,7 @@ function SelfHostVsCloud({ isAuthed }: { isAuthed: boolean }) {
         {/* Dual CTA */}
         <FadeUpOnView>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-3">
-            <a href="https://github.com/chathermes/chathermes" target="_blank" rel="noopener noreferrer" className="group rounded-2xl bg-ink-soft border border-ink-line hover:border-amber/40 transition-colors px-6 py-6 flex items-start gap-4">
+            <a href="https://github.com/ai-co-id/chathermes" target="_blank" rel="noopener noreferrer" className="group rounded-2xl bg-ink-soft border border-ink-line hover:border-amber/40 transition-colors px-6 py-6 flex items-start gap-4">
               <div className="w-10 h-10 rounded-lg bg-paper/[0.05] border border-ink-line flex items-center justify-center shrink-0 mt-1 group-hover:bg-paper/[0.08] transition-colors">
                 <span className="font-[family-name:var(--font-mono)] text-[18px]">{`{}`}</span>
               </div>

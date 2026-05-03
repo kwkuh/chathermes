@@ -250,7 +250,7 @@ export default function DeployHetznerPage() {
               </button>
             </div>
 
-            <div className="text-[12px] text-paper-faint text-center">By deploying, you agree to Hetzner's terms. ChatHermes is licensed under <a href="https://github.com/chathermes/chathermes/blob/main/LICENSE.md" className="hover:text-paper underline">ChatHermes Open Source License</a>.</div>
+            <div className="text-[12px] text-paper-faint text-center">By deploying, you agree to Hetzner's terms. ChatHermes is licensed under <a href="https://github.com/ai-co-id/chathermes/blob/main/LICENSE.md" className="hover:text-paper underline">ChatHermes Open Source License</a>.</div>
           </motion.div>
         )}
 

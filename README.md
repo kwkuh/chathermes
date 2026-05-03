@@ -56,7 +56,7 @@ Bottom tab bar (Chat / Build / Memory / Plan / More) · bottom sheet for seconda
 ## Quick start
 
 ```bash
-git clone https://github.com/chathermes/chathermes.git
+git clone https://github.com/ai-co-id/chathermes.git
 cd chathermes
 ./bin/setup.sh        # interactive .env config (60s)
 docker compose up -d
