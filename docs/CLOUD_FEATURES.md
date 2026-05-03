@@ -72,6 +72,6 @@ These restrictions exist because we want adoption AND sustainability. They're ex
 
 ## Want the hosted version?
 
-[chathermes.com](https://chathermes.com) — same code, hosted by us, with all the cloud-only operations included. From $20/mo with a free tier (50 messages/month, 5 vibe-coding projects).
+[chathermes.com](https://chathermes.com) — same code, operated by us. Free tier available; paid plans unlock private agents.
 
 Self-hosting is genuinely free under the license terms. Pick whichever works for you.

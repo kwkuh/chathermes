@@ -28,7 +28,7 @@ Hermes 4 (405B + 70B), Hermes 3, Kimi K2 / K2 Thinking, Claude Sonnet 4.6, GPT-5
 - **Native Hermes Agent** support when you install `nous-hermes-agent` locally
 
 ### Vibe coding
-"Build me a landing page for X" → multi-file fullstack project → live partial-HTML render → publish to public URL at `/p/<slug>`. 6 starter templates. Per-plan project quota (5/month free, unlimited Pro/Team).
+"Build me a landing page for X" → multi-file fullstack project → live partial-HTML render → publish to public URL at `/p/<slug>`. 6 starter templates. Per-plan project quotas.
 
 ### Conversion-focused billing
 Hero ("You're sharing. Your agent shouldn't be.") · 3-card pricing with Pro emphasized · feature comparison table · 6-question FAQ · trust bar · invoice PDF download · Stripe Checkout + Customer Portal.
@@ -107,7 +107,7 @@ The code is the same. The infrastructure isn't.
 | Private agent provisioning | works with **your** Hetzner token | works with our Hetzner pool |
 | Backups | DIY (cron) | included, off-site |
 | Updates | `git pull` | automatic |
-| Cost | Your infra | from $20/mo (free tier available) |
+| What you bring | servers + keys + time | email + a credit card |
 | **License** | [ChatHermes OSL](./LICENSE.md) — AGPL + Required Attribution | hosted service |
 
 We genuinely want you to self-host. The hosted version pays our team to operate the cloud-only infrastructure. See [docs/CLOUD_FEATURES.md](./docs/CLOUD_FEATURES.md) for the full split.

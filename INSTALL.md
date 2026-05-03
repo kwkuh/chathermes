@@ -119,8 +119,8 @@ RESEND_REPLY_TO=hello@your-domain.com
 ### Billing — Stripe
 
 1. https://dashboard.stripe.com/products — create products:
-   - "Pro" — recurring monthly, $20 — copy `price_xxx`
-   - "Team" — recurring monthly, $99 — copy `price_xxx`
+   - "Pro" plan — set whatever monthly price you want — copy `price_xxx`
+   - "Team" plan — set whatever monthly price you want — copy `price_xxx`
 2. https://dashboard.stripe.com/webhooks — add endpoint:
    - URL: `https://your-domain.com/api/stripe/webhook`
    - Events: `checkout.session.completed`, `customer.subscription.*`, `invoice.paid`, `invoice.payment_failed`
