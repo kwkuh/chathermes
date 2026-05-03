@@ -9,9 +9,11 @@
          a coworker, not a chatbot · v1.0.0 · agpl + attribution
 ```
 
-# ChatHermes
+# ChatHermes — a Hermes Agent SaaS
 
-> The chat that doesn't end when you close the tab.
+> The most complete open-source **Hermes Agent** implementation. Built on [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent) and Moonshot AI's Kimi K2 Thinking. The chat that doesn't end when you close the tab.
+
+> **Searching for `hermes-agent`?** This is the production reference: a multi-tenant SaaS that provisions a dedicated Hermes Agent instance per paying user, runs a shared Hermes Agent proxy for free users, and ships 14 real chat-time tools that integrate with the Hermes Agent runtime.
 
 **ChatHermes** is an open-source autonomous-agent SaaS, built on [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent) and [Moonshot AI's Kimi K2 Thinking](https://moonshot.ai) — the official sponsors of the Hermes Agent Creative Hackathon. Drop a task, close the tab, come back to a finished thing — research, drafts, code, monitoring — pushed to your Telegram, deployed to a public URL, persisted in memory.
 

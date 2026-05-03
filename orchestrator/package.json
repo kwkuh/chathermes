@@ -14,5 +14,18 @@
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5.5.0"
-  }
+  },
+  "description": "ChatHermes \u2014 open-source Hermes Agent SaaS. Built on Nous Research's hermes-agent + Moonshot AI's Kimi K2.",
+  "keywords": [
+    "hermes-agent",
+    "hermes",
+    "agent",
+    "nous-research",
+    "kimi-k2",
+    "moonshot-ai",
+    "autonomous-agent",
+    "llm-agent",
+    "ai-agent",
+    "chathermes"
+  ]
 }
