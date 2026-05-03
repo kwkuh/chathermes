@@ -437,7 +437,7 @@ if (sig !== expected) {
           </Section>
 
           <div className="mt-16 pt-8 border-t border-ink-line/40 flex items-center justify-between text-paper-faint text-[12.5px] font-[family-name:var(--font-mono)]">
-            <span>ChatHermes Docs · v1.0</span>
+            <span>ChatHermes Docs · v1.0 · by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-paper-dim hover:text-amber transition">@kwkuh</a></span>
             <a href="https://github.com/chathermes/chathermes" target="_blank" rel="noopener" className="hover:text-amber inline-flex items-center gap-1">
               Edit on GitHub <ArrowUpRight size={11} />
             </a>
