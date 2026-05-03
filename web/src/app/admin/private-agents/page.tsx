@@ -71,7 +71,7 @@ export default function PrivateAgentsPage() {
   }, [agents.length, agents.map(a=>a.status).join(",")]);
 
   async function provision(userId: string) {
-    if (!confirm(`Provision a Hetzner CPX11 server (~€4.59/mo) for user ${userId.slice(0,8)}?`)) return;
+    if (!confirm(`Provision a dedicated Hetzner server for user ${userId.slice(0,8)}?`)) return;
     setBusy(userId);
     try {
       const r = await fetch(`/api/admin/private-agents/${userId}/provision`, { method: "POST", credentials: "include" });
@@ -137,7 +137,7 @@ export default function PrivateAgentsPage() {
       <div className="mt-6 mb-8 p-4 rounded-xl bg-amber/[0.06] border border-amber/30">
         <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.18em] text-amber mb-1">— gated mode</div>
         <p className="text-paper-dim text-[13px] leading-[1.55]">
-          When a user upgrades to a paid plan, they appear in <span className="text-amber">pending</span> below. Click <strong className="text-paper">Provision</strong> to spawn a dedicated Hetzner CPX11 server (~€4.59/mo) running their isolated Hermes Agent on <code className="text-[12px] text-amber/80 bg-amber/10 px-1.5 py-0.5 rounded">:19002</code>. Routing is automatic — paid users with <span className="text-emerald-400">ready</span> agents bypass the shared proxy.
+          When a user upgrades to a paid plan, they appear in <span className="text-amber">pending</span> below. Click <strong className="text-paper">Provision</strong> to spawn a dedicated Hetzner Cloud server running their isolated Hermes Agent on <code className="text-[12px] text-amber/80 bg-amber/10 px-1.5 py-0.5 rounded">:19002</code>. Routing is automatic — paid users with <span className="text-emerald-400">ready</span> agents bypass the shared proxy.
         </p>
         <p className="text-paper-dim text-[12px] mt-2">
           To enable full auto-provisioning on Stripe webhook, set <code className="text-[11px] text-amber/80 bg-amber/10 px-1.5 py-0.5 rounded">AUTO_PROVISION_PRIVATE_AGENT=true</code> in <code className="text-[11px] text-amber/80">.env</code>.

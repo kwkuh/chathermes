@@ -101,7 +101,7 @@ export default function OpenSourcePage() {
           <FeatureBox
             icon={Server}
             title="Private Agent infrastructure"
-            desc="Free users share a Bun OpenAI-compatible proxy on :19002. Paid users auto-provision dedicated Hetzner CPX11 servers via cloud-init. Gated by default — admin clicks Provision per upgrade."
+            desc="Free users share a Bun OpenAI-compatible proxy on :19002. Paid users auto-provision dedicated Hetzner Cloud servers via cloud-init. Gated by default — admin clicks Provision per upgrade."
             file="orchestrator/src/private_agent.ts · 380 lines"
           />
           <FeatureBox

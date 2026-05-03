@@ -133,7 +133,7 @@ const SCENES: Scene[] = [
     narration: "Pro plan auto-provisions a Hetzner server. Just yours.",
     cues: [
       { at: 0.05, text: "Pro plan unlocks your private agent." },
-      { at: 0.4, text: "A dedicated Hetzner CPX11 — spinning up." },
+      { at: 0.4, text: "A dedicated Hetzner Cloud server — spinning up." },
       { at: 0.85, text: "Ninety seconds later — ready." },
     ],
   },
@@ -1110,7 +1110,7 @@ function SceneMemory({ progress }: { progress: number }) {
   const memories = [
     { topic: "stack", body: "Bun + Next.js 16 + Tailwind v4" },
     { topic: "voice", body: "Concise. Mono labels. Amber accent." },
-    { topic: "deploy", body: "Hetzner CPX11, Hillsboro OR" },
+    { topic: "deploy", body: "Hetzner Cloud, Hillsboro OR" },
     { topic: "favorite", body: "Italic serif headlines." },
   ];
   return (
@@ -1233,7 +1233,7 @@ function ScenePrivate({ progress }: { progress: number }) {
               <Loader2 size={16} className={progress < 0.85 ? "text-blue-300 animate-spin" : "text-emerald-400"} />
               <div className="flex-1 min-w-0">
                 <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.14em] text-blue-200">{progress < 0.85 ? "Spinning up your private agent" : "Private agent · ready"}</div>
-                <div className="text-stone-400 text-[10.5px] font-[family-name:var(--font-mono)] mt-0.5 truncate">{progress < 0.85 ? "Hetzner CPX11 · Hillsboro OR · ~90s" : "5.78.x.x:19002 — your server"}</div>
+                <div className="text-stone-400 text-[10.5px] font-[family-name:var(--font-mono)] mt-0.5 truncate">{progress < 0.85 ? "Hetzner Cloud · Hillsboro OR · ~90s" : "5.78.x.x:19002 — your server"}</div>
               </div>
               {progress > 0.85 && <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />}
             </motion.div>
@@ -1258,7 +1258,7 @@ function SceneBilling({ progress }: { progress: number }) {
           <div className="space-y-2 max-w-[400px]">
             {[
               "Unlimited messages, all 14 tools",
-              "Your own private Hermes Agent (Hetzner CPX11)",
+              "Your own private Hermes Agent on Hetzner Cloud",
               "Unlimited vibe-coding projects",
               "Priority queue + 30-day refund",
             ].map((f, i) => {

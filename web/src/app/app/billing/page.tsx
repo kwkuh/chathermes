@@ -411,7 +411,7 @@ function SharedVsPrivate() {
           <div className="text-center">
             <Cpu size={28} className="text-amber mx-auto mb-1.5" />
             <div className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-amber/80">your private agent</div>
-            <div className="font-[family-name:var(--font-mono)] text-[9px] text-amber/60 mt-1">cpx11 · hetzner</div>
+            <div className="font-[family-name:var(--font-mono)] text-[9px] text-amber/60 mt-1">hetzner cloud</div>
           </div>
         </div>
         <div className="mt-3 text-[11.5px] text-amber/80">always available · isolated</div>
@@ -470,7 +470,7 @@ function ConversionPitch() {
         <FeatureCard
           icon={Server}
           title="Your own server"
-          desc="Dedicated Hetzner CPX11 (2 vCPU, 2GB RAM) running your isolated Hermes Agent. Not shared. Not throttled."
+          desc="A dedicated Hetzner Cloud server running your isolated Hermes Agent. Not shared. Not throttled."
         />
         <FeatureCard
           icon={Gauge}
@@ -554,7 +554,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 const FAQS = [
   {
     q: "What's a 'private agent' and why should I care?",
-    a: "Free users share one Hermes Agent instance. Under load, your prompt waits in queue with everyone else's. Pro provisions a dedicated Hetzner Cloud server (CPX11 — 2 vCPU, 2GB RAM, NVMe SSD, 20TB traffic) running only your Hermes Agent. Your prompts hit your CPU. Your tools run with your tokens. Nobody else can throttle you.",
+    a: "Free users share one Hermes Agent instance. Under load, your prompt waits in queue with everyone else's. Pro provisions a dedicated Hetzner Cloud server running only your Hermes Agent. Your prompts hit your CPU. Your tools run with your tokens. Nobody else can throttle you.",
   },
   {
     q: "How fast does my private agent actually deploy?",

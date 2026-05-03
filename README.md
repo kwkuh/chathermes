@@ -36,7 +36,7 @@ Hermes 4 (405B + 70B), Hermes 3, Kimi K2 / K2 Thinking, Claude Sonnet 4.6, GPT-5
 
 ### Hermes Agent integration
 - **Shared agent proxy** — Bun OpenAI-compatible proxy on `:19002` for all free-tier users
-- **Private agent provisioning** — Pro plan auto-spawns dedicated Hetzner CPX11 server per user (gated mode by default — admin must approve each spawn)
+- **Private agent provisioning** — Pro plan auto-spawns a dedicated Hetzner Cloud server per user (gated mode by default — admin must approve each spawn)
 - **Native Hermes Agent** support when you install `nous-hermes-agent` locally
 
 ### Vibe coding
