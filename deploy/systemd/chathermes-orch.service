@@ -1,0 +1,26 @@
+[Unit]
+Description=ChatHermes Orchestrator
+After=network.target
+PartOf=chathermes.target
+
+[Service]
+Type=simple
+User=chathermes
+WorkingDirectory=/opt/chathermes/orchestrator
+EnvironmentFile=/opt/chathermes/orchestrator/.env
+Environment=PORT=7010
+ExecStart=/usr/local/bin/bun run src/index.ts
+Restart=on-failure
+RestartSec=5s
+StandardOutput=append:/var/log/chathermes/orch.log
+StandardError=append:/var/log/chathermes/orch.err.log
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/chathermes/orchestrator/data /var/log/chathermes
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target chathermes.target

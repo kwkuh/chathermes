@@ -71,12 +71,19 @@ Bottom tab bar (Chat / Build / Memory / Plan / More) · bottom sheet for seconda
 ```bash
 git clone https://github.com/ai-co-id/chathermes.git
 cd chathermes
-./bin/setup.sh        # interactive .env config (60s)
-docker compose up -d
+./bin/install.sh      # → setup wizard + deps + build + smoke test
+./bin/start.sh        # → boots all 3 services
 # -> open http://localhost:7000
 ```
 
 Sign in with any email. Magic link prints to orchestrator log if you skipped Resend. Done.
+
+```bash
+./bin/health.sh       # check everything is running
+./bin/stop.sh         # shut down
+```
+
+Requires Bun >= 1.3. For systemd / one-click Hetzner / production: see [INSTALL.md](./INSTALL.md).
 
 See [INSTALL.md](./INSTALL.md) for production setup (HTTPS, Stripe, Resend domain, Hermes Agent native).
 

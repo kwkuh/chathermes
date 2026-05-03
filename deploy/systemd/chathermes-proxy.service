@@ -1,0 +1,25 @@
+[Unit]
+Description=ChatHermes Hermes Agent Proxy
+After=network.target chathermes-orch.service
+PartOf=chathermes.target
+
+[Service]
+Type=simple
+User=chathermes
+WorkingDirectory=/opt/chathermes/orchestrator
+EnvironmentFile=/opt/chathermes/orchestrator/.env
+Environment=HERMES_PROXY_PORT=19002
+ExecStart=/usr/local/bin/bun run src/_hermes_proxy.ts
+Restart=on-failure
+RestartSec=5s
+StandardOutput=append:/var/log/chathermes/proxy.log
+StandardError=append:/var/log/chathermes/proxy.err.log
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target chathermes.target

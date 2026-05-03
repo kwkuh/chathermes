@@ -1,0 +1,7 @@
+[Unit]
+Description=ChatHermes (orchestrator + proxy + web)
+Wants=chathermes-orch.service chathermes-proxy.service chathermes-web.service
+After=network.target
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+[Unit]
+Description=ChatHermes Web (Next.js)
+After=network.target chathermes-orch.service
+Requires=chathermes-orch.service
+PartOf=chathermes.target
+
+[Service]
+Type=simple
+User=chathermes
+WorkingDirectory=/opt/chathermes/web
+Environment=PORT=7000
+Environment=ORCH_URL=http://127.0.0.1:7010
+Environment=NODE_ENV=production
+ExecStart=/usr/local/bin/bun run start
+Restart=on-failure
+RestartSec=5s
+StandardOutput=append:/var/log/chathermes/web.log
+StandardError=append:/var/log/chathermes/web.err.log
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/chathermes/web/.next/cache
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target chathermes.target
