@@ -15,18 +15,18 @@ export default async function Landing() {
   const isAuthed = !!sid;
   return (
     <>
-      <nav className="absolute top-0 left-0 right-0 py-7 z-10">
-        <div className="mx-auto max-w-[1240px] px-7 flex justify-between items-center">
-          <Link href="/" className="font-[family-name:var(--font-display)] text-[30px] sm:text-[34px] tracking-tight leading-none flex items-center gap-3">
-            <Image src="/illustrations/mascot-head.png" alt="" width={56} height={56} className="w-12 h-12 sm:w-14 sm:h-14 halo-amber" priority />
+      <nav className="absolute top-0 left-0 right-0 py-5 sm:py-7 z-10">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-7 flex justify-between items-center">
+          <Link href="/" className="font-[family-name:var(--font-display)] text-[22px] sm:text-[34px] tracking-tight leading-none flex items-center gap-3">
+            <Image src="/illustrations/mascot-head.png" alt="" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 halo-amber" priority />
             <span>ChatHermes</span>
           </Link>
-          <div className="flex items-center gap-7">
-            <Link href="/introducing" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">demo</Link>
-            <Link href="/docs" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">docs</Link>
-            <Link href="/opensource" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">open source</Link>
-            <a href="#how" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">how</a>
-            <a href="#vs" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">vs chatgpt</a>
+          <div className="flex items-center gap-4 sm:gap-7">
+            <Link href="/introducing" className="hidden sm:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">demo</Link>
+            <Link href="/docs" className="hidden md:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">docs</Link>
+            <Link href="/opensource" className="hidden md:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">open source</Link>
+            <a href="#how" className="hidden lg:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">how</a>
+            <a href="#vs" className="hidden lg:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">vs chatgpt</a>
             <Link href={isAuthed ? "/app" : "/auth/login"} className="font-[family-name:var(--font-mono)] text-[12px] text-paper hover:text-amber transition-colors uppercase tracking-[0.12em]">
               {isAuthed ? "open app →" : "sign in →"}
             </Link>
@@ -35,26 +35,26 @@ export default async function Landing() {
       </nav>
 
       <main>
-        <section className="min-h-[100svh] flex flex-col items-center justify-center px-7 pt-32 pb-24 relative">
+        <section className="min-h-[100svh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-7 pt-24 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 lg:pb-24 relative">
           <HeroIntro />
           <h1 className="font-[family-name:var(--font-display)] text-[clamp(48px,9vw,128px)] leading-[0.96] tracking-[-0.035em] text-center max-w-[16ch] mb-7 mt-6">
             What should your <em className="text-amber">agent</em> work on?
           </h1>
-          <p className="text-paper-dim text-[17px] max-w-[54ch] text-center mb-12 leading-[1.55]">
+          <p className="text-paper-dim text-[15px] sm:text-[17px] max-w-[54ch] text-center mb-10 sm:mb-12 leading-[1.55] px-2">
             Drop a task. ChatHermes spawns a private agent that keeps working — even after you close the tab. Memory, skills, scheduling, and Telegram out of the box.
           </p>
           <ChatLauncher />
           <LivePreview />
         </section>
 
-        <section id="how" className="py-24 lg:py-32 border-t border-ink-line-soft">
-          <div className="mx-auto max-w-[1140px] px-7">
-            <div className="max-w-[64ch] mb-20">
+        <section id="how" className="py-16 sm:py-20 lg:py-32 border-t border-ink-line-soft">
+          <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-7">
+            <div className="max-w-[64ch] mb-12 sm:mb-16 lg:mb-20">
               <div className="font-[family-name:var(--font-mono)] text-[11px] text-amber uppercase tracking-[0.18em] mb-6">— how it works</div>
               <h2 className="font-[family-name:var(--font-display)] text-[clamp(40px,6vw,72px)] leading-[1.0] tracking-[-0.025em]">
                 It works <em className="text-amber">while you&apos;re offline.</em>
               </h2>
-              <p className="text-paper-dim mt-7 text-[18px] leading-[1.55] max-w-[56ch]">
+              <p className="text-paper-dim mt-5 sm:mt-7 text-[15px] sm:text-[18px] leading-[1.55] max-w-[56ch]">
                 Three things that ChatGPT can&apos;t do — because it&apos;s a chat. ChatHermes is an agent.
               </p>
             </div>
@@ -90,13 +90,13 @@ export default async function Landing() {
           </div>
         </section>
 
-        <section id="vs" className="py-24 lg:py-32 border-t border-ink-line-soft">
-          <div className="mx-auto max-w-[1140px] px-7">
+        <section id="vs" className="py-16 sm:py-20 lg:py-32 border-t border-ink-line-soft">
+          <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-7">
             <div className="font-[family-name:var(--font-mono)] text-[11px] text-amber uppercase tracking-[0.18em] mb-6">— vs. chatgpt</div>
             <h2 className="font-[family-name:var(--font-display)] text-[clamp(40px,6vw,72px)] leading-[1.0] tracking-[-0.025em] max-w-[20ch]">
               A chatbot is a calculator. <em className="text-amber">ChatHermes is a coworker.</em>
             </h2>
-            <div className="mt-16 grid gap-5">
+            <div className="mt-10 sm:mt-14 lg:mt-16 grid gap-5">
               <CompareImage label="presence" src="/illustrations/compare-presence.png" alt="ChatGPT sleeping vs ChatHermes always working" />
               <CompareImage label="memory" src="/illustrations/compare-memory.png" alt="ChatGPT forgets vs ChatHermes remembers" />
               <CompareImage label="surface" src="/illustrations/compare-surface.png" alt="ChatGPT trapped in a tab vs ChatHermes everywhere" />
@@ -105,13 +105,13 @@ export default async function Landing() {
           </div>
         </section>
 
-        <section className="py-24 lg:py-32 border-t border-ink-line-soft">
-          <div className="mx-auto max-w-[1140px] px-7">
+        <section className="py-16 sm:py-20 lg:py-32 border-t border-ink-line-soft">
+          <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-7">
             <div className="font-[family-name:var(--font-mono)] text-[11px] text-amber uppercase tracking-[0.18em] mb-6">— what makes it different</div>
             <h2 className="font-[family-name:var(--font-display)] text-[clamp(40px,6vw,72px)] leading-[1.0] tracking-[-0.025em] max-w-[20ch]">
               Four things that make this <em className="text-amber">different.</em>
             </h2>
-            <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="mt-10 sm:mt-14 grid grid-cols-1 md:grid-cols-2 gap-5">
               <PillarCard n="01" h="Zero install." img="/illustrations/pillar-install.png">Open the URL. Chat. The agent is already running on a server we operate. No Docker. No SSH. No env vars.</PillarCard>
               <PillarCard n="02" h="Lifelong memory." img="/illustrations/pillar-memory.png">Browse, edit, and curate what your agent knows about you. Memory is reviewable, never opaque.</PillarCard>
               <PillarCard n="03" h="Lives where you live." img="/illustrations/pillar-surfaces.png">One agent, every surface. Connect Telegram in one click — same memory, same skills, same voice.</PillarCard>
@@ -120,8 +120,8 @@ export default async function Landing() {
           </div>
         </section>
 
-        <section className="py-32 border-t border-ink-line-soft relative overflow-hidden">
-          <div className="mx-auto max-w-[1240px] px-7 grid lg:grid-cols-[auto_1fr] gap-12 lg:gap-20 items-center">
+        <section className="py-16 sm:py-24 lg:py-32 border-t border-ink-line-soft relative overflow-hidden">
+          <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-7 grid lg:grid-cols-[auto_1fr] gap-12 lg:gap-20 items-center">
             <div className="hidden lg:flex justify-center -my-10 w-[300px]">
               <TiltImage src="/illustrations/winged-helmet.png" alt="" width={320} height={260} className="w-[300px] h-auto bleed-soft halo-amber float-drift" intensity={10} />
             </div>
@@ -135,7 +135,7 @@ export default async function Landing() {
               </p>
               <a
                 href="#top"
-                className="inline-flex items-center gap-3 mt-10 px-8 py-4 rounded-full bg-amber text-ink font-medium text-[15px] hover:bg-amber-soft hover:-translate-y-px transition-all"
+                className="inline-flex items-center gap-3 mt-8 sm:mt-10 px-7 sm:px-8 py-3.5 sm:py-4 rounded-full bg-amber text-ink font-medium text-[14.5px] sm:text-[15px] hover:bg-amber-soft hover:-translate-y-px transition-all"
               >
                 Try it now ↑
               </a>
@@ -149,9 +149,9 @@ export default async function Landing() {
 
       <section className="relative pt-24 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(232,165,71,0.08),transparent_60%)] pointer-events-none" />
-        <div className="mx-auto max-w-[1480px] px-7 relative">
+        <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-7 relative">
           <div className="flex items-end gap-4 sm:gap-8 justify-center lg:justify-start">
-            <Image src="/illustrations/mascot-full.png" alt="" width={420} height={420} className="hidden md:block w-[180px] lg:w-[280px] xl:w-[340px] h-auto bleed-soft halo-amber float-drift -mb-2" />
+            <Image src="/illustrations/mascot-full.png" alt="" width={420} height={420} className="hidden md:block w-[140px] lg:w-[260px] xl:w-[320px] h-auto bleed-soft halo-amber float-drift -mb-2" />
             <h2
               aria-label="ChatHermes"
               className="font-[family-name:var(--font-display)] leading-[0.82] tracking-[-0.04em] text-paper select-none"
@@ -164,7 +164,7 @@ export default async function Landing() {
             <p className="font-[family-name:var(--font-display)] italic text-[clamp(20px,3vw,32px)] leading-[1.2] text-paper-dim max-w-[28ch]">
               The chat that doesn&apos;t end when you close the tab.
             </p>
-            <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.18em] text-paper-faint flex flex-wrap gap-x-5 gap-y-1.5">
+            <div className="font-[family-name:var(--font-mono)] text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.14em] sm:tracking-[0.18em] text-paper-faint flex flex-wrap gap-x-3 sm:gap-x-5 gap-y-1.5">
               <span>built on Hermes Agent</span>
               <span>·</span>
               <span>Hermes Agent × Kimi K2</span>
@@ -176,7 +176,7 @@ export default async function Landing() {
       </section>
 
       <footer className="py-10 border-t border-ink-line-soft text-paper-dim text-[13px]">
-        <div className="mx-auto max-w-[1140px] px-7 flex justify-between flex-wrap gap-4 items-center">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-7 flex justify-between flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2.5">
             <Image src="/illustrations/mascot-head.png" alt="" width={28} height={28} className="w-7 h-7 halo-amber" />
             <span>© 2026 ChatHermes · by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@supercryptolord</a></span>
@@ -277,7 +277,7 @@ function SelfHostVsCloud({ isAuthed }: { isAuthed: boolean }) {
   ];
 
   return (
-    <section className="relative py-24 overflow-hidden border-t border-ink-line-soft">
+    <section className="relative py-16 sm:py-20 lg:py-24 overflow-hidden border-t border-ink-line-soft">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,154,149,0.06),transparent_60%)] pointer-events-none" />
       <div className="mx-auto max-w-[1140px] px-5 sm:px-7 relative">
         <FadeUpOnView>
