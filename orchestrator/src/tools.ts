@@ -179,12 +179,12 @@ export const TOOLS = [
     type: 'function',
     function: {
       name: 'dispatch_subagent',
-      description: 'Delegate sub-task to different model (Claude/GPT-5/Kimi). Returns full reply.',
+      description: 'Delegate sub-task to different model (Kimi K2 Thinking, Claude, GPT-5). Returns full reply. Default: Kimi K2 Thinking for reasoning-heavy tasks.',
       parameters: {
         type: 'object',
         properties: {
           task: { type: 'string', description: 'Complete task instruction' },
-          model: { type: 'string', description: 'anthropic/claude-sonnet-4.6, openai/gpt-5, moonshotai/kimi-k2-thinking' },
+          model: { type: 'string', description: 'moonshotai/kimi-k2-thinking (default — strong reasoning), anthropic/claude-sonnet-4.6, openai/gpt-5' },
         },
         required: ['task'],
       },
@@ -499,7 +499,7 @@ export async function executeTool(userId: string, call: ToolCall): Promise<strin
       case "dispatch_subagent": {
         const task = String(args.task ?? "").trim();
         if (!task) return "Empty task.";
-        const model = String(args.model || "anthropic/claude-sonnet-4.6");
+        const model = String(args.model || "moonshotai/kimi-k2-thinking");
         // Look up provider for this model
         const modelRow = (DB.db as any).query("SELECT m.model_id, p.api_key, p.base_url FROM llm_models m JOIN providers p ON p.id = m.provider_id WHERE m.model_id = ? LIMIT 1").get(model) as any;
         if (!modelRow?.api_key) return `Subagent model "${model}" not configured. Available models: hermes-4-405b, kimi-k2-thinking, claude-sonnet-4.6, gpt-5, gemini-3.1-pro-preview.`;

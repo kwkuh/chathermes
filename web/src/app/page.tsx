@@ -23,6 +23,8 @@ export default async function Landing() {
           </Link>
           <div className="flex items-center gap-7">
             <Link href="/introducing" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">demo</Link>
+            <Link href="/docs" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">docs</Link>
+            <Link href="/opensource" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">open source</Link>
             <a href="#how" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">how</a>
             <a href="#vs" className="font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">vs chatgpt</a>
             <Link href={isAuthed ? "/app" : "/auth/login"} className="font-[family-name:var(--font-mono)] text-[12px] text-paper hover:text-amber transition-colors uppercase tracking-[0.12em]">
@@ -165,9 +167,9 @@ export default async function Landing() {
             <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.18em] text-paper-faint flex flex-wrap gap-x-5 gap-y-1.5">
               <span>built on Hermes Agent</span>
               <span>·</span>
-              <span>powered by Kimi K2</span>
+              <span>Hermes Agent × Kimi K2</span>
               <span>·</span>
-              <span>nous research × kimi hackathon</span>
+              <span>Nous Research × Moonshot AI</span>
             </div>
           </div>
         </div>
@@ -270,7 +272,7 @@ function SelfHostVsCloud({ isAuthed }: { isAuthed: boolean }) {
     { label: "Public preview URL",        oss: "your-domain.com/p/<slug>",        cloud: "chathermes.com/p/<slug>",         cloudGood: false },
     { label: "Backups",                   oss: "DIY (cron + S3)",                 cloud: "automatic + point-in-time",       cloudGood: true },
     { label: "Updates",                   oss: "git pull + restart",              cloud: "automatic",                       cloudGood: true },
-    { label: "Monthly cost",              oss: "$50–$300 (infra + LLM)",          cloud: "from $20 / mo",                   cloudGood: true },
+    { label: "What you bring",            oss: "your servers, keys, time",        cloud: "your email + a credit card",      cloudGood: true },
     { label: "Privacy",                   oss: "your server, your data",          cloud: "encrypted at rest, SOC2-track",   cloudGood: false },
   ];
 

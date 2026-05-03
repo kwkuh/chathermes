@@ -7,7 +7,7 @@ import {
   Play, Pause, ArrowRight, Sparkles, Volume2, VolumeX, Maximize, X,
   MessageSquare, Brain, Globe, Code2, Bell, Cpu, Mail, Send, Crown,
   CheckCircle2, Loader2, Subtitles, MousePointer2, Plug, Shield,
-  Zap, Activity, KeyRound, Plus, Search, Music, Download, Disc,
+  Zap, Activity, KeyRound, Plus, Search, Music,
 } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -414,10 +414,6 @@ export default function IntroducingPage() {
   const [controlsVisible, setControlsVisible] = useState(true);
   const [muted, setMuted] = useState(true);  // voice off by default — auto-play with sound is blocked
   const [musicOn, setMusicOn] = useState(false);  // backsound off by default
-  const [recording, setRecording] = useState(false);
-  const [recordReady, setRecordReady] = useState(false);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const recordChunksRef = useRef<Blob[]>([]);
   const [ccOn, setCcOn] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
   const startRef = useRef<number>(Date.now());
@@ -496,7 +492,7 @@ export default function IntroducingPage() {
       if (e.key === " ") { e.preventDefault(); togglePlay(); }
       if (e.key === "ArrowRight") jumpRel(5000);
       if (e.key === "ArrowLeft") jumpRel(-5000);
-      if (e.key === "Escape") { setPlaying(false); if (recording) stopRecording(); }
+      if (e.key === "Escape") setPlaying(false);
       if (e.key === "f" || e.key === "F") toggleFullscreen();
       if (e.key === "m" || e.key === "M") setMuted((v) => !v);
       if (e.key === "c" || e.key === "C") setCcOn((v) => !v);
@@ -505,81 +501,6 @@ export default function IntroducingPage() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [activeIdx, progress]);
-
-  // Force stop + cleanup recording (manual dismiss or safeguard)
-  function stopRecording() {
-    try { recorderRef.current?.stop(); } catch {}
-    try {
-      const rec = recorderRef.current;
-      if (rec && (rec as any).stream) {
-        ((rec as any).stream as MediaStream).getTracks().forEach((t: MediaStreamTrack) => t.stop());
-      }
-    } catch {}
-    recorderRef.current = null;
-    setRecording(false);
-  }
-
-    // Record the playing film via browser screen-capture (no server needed)
-  async function startRecording() {
-    if (typeof window === "undefined") return;
-    if (recording) return;
-    try {
-      // Ask user to share this tab with audio
-      // @ts-ignore
-      const stream: MediaStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 30 } as any,
-        audio: true,
-        // @ts-ignore — Chrome-specific hint: prefer current tab
-        preferCurrentTab: true,
-        selfBrowserSurface: "include",
-      });
-      // Combine browser audio (display capture audio) — already in stream if user checked "share tab audio"
-      const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
-        ? "video/webm;codecs=vp9,opus"
-        : MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")
-        ? "video/webm;codecs=vp8,opus"
-        : "video/webm";
-      const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 5_000_000 });
-      recordChunksRef.current = [];
-      rec.ondataavailable = (e) => { if (e.data && e.data.size) recordChunksRef.current.push(e.data); };
-      rec.onstop = () => {
-        try {
-          const blob = new Blob(recordChunksRef.current, { type: mime });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `chathermes-intro-${new Date().toISOString().slice(0,19).replace(/[:T]/g,"")}.webm`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        } catch (err) { console.error("download failed", err); }
-        try { stream.getTracks().forEach((t) => t.stop()); } catch {}
-        recorderRef.current = null;
-        setTimeout(() => setRecording(false), 0);
-      };
-      // Stop recording when capture ends (user stops sharing)
-      stream.getVideoTracks()[0].onended = () => { try { rec.stop(); } catch {} };
-      recorderRef.current = rec;
-      rec.start(250);  // 250ms chunks for smooth saving
-      setRecording(true);
-
-      // Auto-enable voice + music + restart from beginning + play
-      setMuted(false);
-      setMusicOn(true);
-      seekTo(0);
-      setHasStarted(true);
-      setPlaying(true);
-
-      // Auto-stop when film ends (TOTAL_MS + 1s buffer)
-      setTimeout(() => {
-        try { rec.stop(); } catch {}
-      }, TOTAL_MS + 1500);
-    } catch (e) {
-      console.error("recording failed", e);
-      setRecording(false);
-    }
-  }
 
   function togglePlay() {
     if (!hasStarted) setHasStarted(true);
@@ -675,27 +596,14 @@ export default function IntroducingPage() {
       <AnimatePresence>
         {!hasStarted && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-5">
-              <button data-control onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="group flex flex-col items-center gap-4 cursor-pointer">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white/95 hover:bg-white text-black flex items-center justify-center transition-all shadow-[0_0_60px_rgba(255,255,255,0.4)] group-hover:scale-105">
-                  <Play size={36} fill="currentColor" className="ml-1" strokeWidth={0} />
-                </div>
-                <div className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.4em] text-white/90">ChatHermes — A Film</div>
-                <div className="font-[family-name:var(--font-mono)] text-[10.5px] text-white/40">{fmtTime(TOTAL_MS)} · {SCENES.length} chapters · click to play</div>
-              </button>
-              <div className="flex items-center gap-3 mt-2">
-                <button
-                  data-control
-                  onClick={(e) => { e.stopPropagation(); startRecording(); }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 text-[12.5px] font-medium transition"
-                  title="Record this film as WebM (for X / Twitter)"
-                >
-                  <Disc size={13} className="animate-pulse" />
-                  Record for X / Twitter
-                </button>
+            <button data-control onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="group flex flex-col items-center gap-4 cursor-pointer">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white/95 hover:bg-white text-black flex items-center justify-center transition-all shadow-[0_0_60px_rgba(255,255,255,0.4)] group-hover:scale-105">
+                <Play size={36} fill="currentColor" className="ml-1" strokeWidth={0} />
               </div>
-              <div className="font-[family-name:var(--font-mono)] text-[10px] text-white/30 max-w-[420px] text-center mt-1">CC on · M for voice (Ryan, en-GB) · B for tech backsound</div>
-            </div>
+              <div className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.4em] text-white/90">ChatHermes — A Film</div>
+              <div className="font-[family-name:var(--font-mono)] text-[10.5px] text-white/40">{fmtTime(TOTAL_MS)} · {SCENES.length} chapters · click to play</div>
+              <div className="font-[family-name:var(--font-mono)] text-[10px] text-white/30 mt-2">CC on · M for voice · B for backsound</div>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -777,24 +685,6 @@ export default function IntroducingPage() {
         )}
       </AnimatePresence>
 
-      {/* RECORDING INDICATOR */}
-      <AnimatePresence>
-        {recording && (
-          <motion.button
-            data-control
-            onClick={(e) => { e.stopPropagation(); stopRecording(); }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-rose-500/20 border border-rose-500/50 backdrop-blur-md flex items-center gap-2 hover:bg-rose-500/30 hover:border-rose-500/70 transition cursor-pointer group"
-            title="Click to stop recording + dismiss"
-          >
-            <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" style={{ boxShadow: "0 0 10px rgb(244,63,94)" }} />
-            <span className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-rose-300">REC · auto-stops at {fmtTime(TOTAL_MS)}</span>
-            <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-rose-200/70 ml-2 pl-2 border-l border-rose-500/40 opacity-0 group-hover:opacity-100 transition">click to stop</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
@@ -902,6 +792,7 @@ function SceneStudio({ progress }: { progress: number }) {
           ChatHermes
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: progress > 0.6 ? 1 : 0, y: progress > 0.6 ? 0 : 10 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.4em] text-amber mt-4">Studios</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.75 ? 1 : 0 }} transition={{ duration: 0.6 }} className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em] text-white/40 mt-3">Built on Hermes 4 × Kimi K2 Thinking</motion.div>
       </div>
       <Vignette />
     </div>
@@ -1435,7 +1326,7 @@ function SceneOutro({ progress }: { progress: number }) {
         <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="inline-block mb-6">
           <Image src="/illustrations/mascot-head.png" alt="" width={88} height={88} className="mx-auto" style={{ filter: "drop-shadow(0 0 50px rgba(232,165,71,0.7))" }} />
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.15 ? 1 : 0 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.4em] text-amber mb-4">A coworker. Not a chatbot.</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.15 ? 1 : 0 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.4em] text-amber mb-4">Hermes Agent × Kimi K2 — A Coworker</motion.div>
         <motion.h1 initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: progress > 0.25 ? 1 : 0, scale: progress > 0.25 ? 1 : 0.96 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }} className="font-[family-name:var(--font-display)] text-[clamp(44px,8vw,110px)] leading-[0.95] tracking-[-0.03em] text-white" style={{ textShadow: "0 0 50px rgba(232,165,71,0.3)" }}>Ready when <em className="text-amber italic">you are.</em></motion.h1>
         {progress > 0.85 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.4em] text-white/30 mt-12">⊹ a chathermes studios production ⊹</motion.div>}
       </motion.div>
