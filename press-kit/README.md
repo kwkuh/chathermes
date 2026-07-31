@@ -15,7 +15,7 @@
 
 - **Live**: https://chathermes.com
 - **Cinematic demo**: https://chathermes.com/introducing
-- **Source**: https://github.com/ai-co-id/chathermes
+- **Source**: https://github.com/kwkuh/chathermes
 - **License**: AGPL-3.0 + Required Attribution Addendum (see [LICENSE.md](../LICENSE.md))
 
 ## Brand
@@ -91,11 +91,11 @@ Right-click → Save As, or `curl -O <url>`.
 
 ```bash
 # Logos
-curl -O https://raw.githubusercontent.com/ai-co-id/chathermes/main/press-kit/logo/mascot-head.png
-curl -O https://raw.githubusercontent.com/ai-co-id/chathermes/main/press-kit/logo/wordmark-banner.png
+curl -O https://raw.githubusercontent.com/kwkuh/chathermes/main/press-kit/logo/mascot-head.png
+curl -O https://raw.githubusercontent.com/kwkuh/chathermes/main/press-kit/logo/wordmark-banner.png
 
 # Or grab everything as a ZIP
-curl -L -O https://github.com/ai-co-id/chathermes/archive/refs/heads/main.zip
+curl -L -O https://github.com/kwkuh/chathermes/archive/refs/heads/main.zip
 unzip main.zip
 ls chathermes-main/press-kit/
 ```
@@ -121,4 +121,4 @@ ls chathermes-main/press-kit/
 > still mention Kimi K2 in the audio itself. The transcripts are kept verbatim so they
 > match the files. Re-record before reusing them in new material.
 
-Questions? Open an issue at https://github.com/ai-co-id/chathermes/issues.
+Questions? Open an issue at https://github.com/kwkuh/chathermes/issues.

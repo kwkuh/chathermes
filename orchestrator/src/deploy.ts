@@ -74,7 +74,7 @@ export function buildCloudInit(opts: {
   enableCaddy?: boolean;
   repoUrl?: string;
 }): string {
-  const repo = opts.repoUrl || "https://github.com/ai-co-id/chathermes.git";
+  const repo = opts.repoUrl || "https://github.com/kwkuh/chathermes.git";
 
   // Build env block
   const envLines: string[] = [

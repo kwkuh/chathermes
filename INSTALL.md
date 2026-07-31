@@ -5,7 +5,7 @@ Three install paths — pick one.
 ## Path 0 — Quickstart (one command, ~3 min)
 
 ```bash
-git clone https://github.com/ai-co-id/chathermes.git
+git clone https://github.com/kwkuh/chathermes.git
 cd chathermes
 ./bin/install.sh         # → setup wizard + deps + build + smoke test
 ./bin/start.sh           # → boots all 3 services
@@ -45,7 +45,7 @@ curl -X POST https://your-self-host.com/api/deploy/hetzner \
 If `./bin/install.sh` fails or you want full control:
 
 ```bash
-git clone https://github.com/ai-co-id/chathermes.git
+git clone https://github.com/kwkuh/chathermes.git
 cd chathermes
 
 # 1. Generate .env interactively (or copy + edit)

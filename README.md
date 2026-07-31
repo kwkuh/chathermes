@@ -9,13 +9,22 @@
          a coworker, not a chatbot · v1.0.0 · agpl + attribution
 ```
 
-# ChatHermes — a Hermes Agent SaaS
+# ChatHermes — build your own Hermes Agent SaaS
 
-> The most complete open-source **Hermes Agent** implementation. Built on [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent). The chat that doesn't end when you close the tab.
+> Open-source, **self-hosted**, multi-tenant SaaS boilerplate on top of [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent). Clone it, run one command, and you have a working agent platform: auth, billing, tools, memory, and a dedicated agent per paying user.
 
 > **Searching for `hermes-agent`?** This is the production reference: a multi-tenant SaaS that provisions a dedicated Hermes Agent instance per paying user, runs a shared Hermes Agent proxy for free users, and ships 14 real chat-time tools that integrate with the Hermes Agent runtime.
 
-**ChatHermes** is an open-source autonomous-agent SaaS, built on [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent). Drop a task, close the tab, come back to a finished thing — research, drafts, code, monitoring — pushed to your Telegram, deployed to a public URL, persisted in memory.
+**Start your own agent startup on it, or self-host it for your team.** Everything the hosted product runs on is in this repo — no "open core" holdback. Magic-link auth, Stripe subscriptions and credit packs, 14 working tools, persistent memory, vibe coding with public preview URLs, a Telegram connector, a REST API with OpenAPI, outbound webhooks, and an admin dashboard.
+
+```bash
+git clone https://github.com/kwkuh/chathermes.git && cd chathermes
+./bin/install.sh && ./bin/start.sh     # one command each — running in ~3 min
+```
+
+No PostgreSQL, no Redis, no Kafka. One SQLite file, three Bun processes. Deploy it to a $5 VPS, or [one-click it to Hetzner](./INSTALL.md) from the admin panel.
+
+For the end-user pitch: drop a task, close the tab, come back to a finished thing — research, drafts, code, monitoring — pushed to your Telegram, deployed to a public URL, persisted in memory.
 
 This repo is the source of [chathermes.com](https://chathermes.com). Self-host under [the ChatHermes Open Source License](./LICENSE.md), or [skip the setup](https://chathermes.com) and use the managed version.
 
@@ -68,7 +77,7 @@ Bottom tab bar (Chat / Build / Memory / Plan / More) · bottom sheet for seconda
 ## Quick start
 
 ```bash
-git clone https://github.com/ai-co-id/chathermes.git
+git clone https://github.com/kwkuh/chathermes.git
 cd chathermes
 ./bin/install.sh      # → setup wizard + deps + build + smoke test
 ./bin/start.sh        # → boots all 3 services

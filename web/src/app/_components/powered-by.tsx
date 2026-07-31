@@ -57,7 +57,7 @@ export function PoweredByChatHermes({
       </a>
       <span className="text-paper-faint/60">·</span>
       <a
-        href="https://github.com/ai-co-id/chathermes"
+        href="https://github.com/kwkuh/chathermes"
         target="_blank"
         rel="noopener"
         className="text-paper-faint hover:text-paper transition-colors"

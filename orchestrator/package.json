@@ -15,7 +15,7 @@
     "@types/bun": "latest",
     "typescript": "^5.5.0"
   },
-  "description": "ChatHermes — open-source Hermes Agent SaaS. Built on Nous Research's hermes-agent.",
+  "description": "ChatHermes — build your own Hermes Agent SaaS. Open-source, self-hosted, multi-tenant agent platform on Nous Research's hermes-agent.",
   "keywords": [
     "hermes-agent",
     "hermes",
@@ -24,6 +24,14 @@
     "autonomous-agent",
     "llm-agent",
     "ai-agent",
-    "chathermes"
+    "chathermes",
+    "self-hosted",
+    "saas-boilerplate",
+    "saas-starter",
+    "multi-tenant",
+    "one-click-deploy",
+    "ai-saas",
+    "agent-platform",
+    "open-source-saas"
   ]
 }

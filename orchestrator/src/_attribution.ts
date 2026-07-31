@@ -16,7 +16,7 @@
 export const CHATHERMES = {
   name: "ChatHermes",
   version: "1.0.0",
-  source: "https://github.com/ai-co-id/chathermes",
+  source: "https://github.com/kwkuh/chathermes",
   cloud: "https://chathermes.com",
   license: "ChatHermes Open Source License v1.0 (AGPL-3.0 + Required Attribution)",
   copyright: "Copyright (c) 2026 Getid, Inc. and contributors",

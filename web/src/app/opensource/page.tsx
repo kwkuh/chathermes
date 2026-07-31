@@ -39,7 +39,7 @@ export default function OpenSourcePage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a
-            href="https://github.com/ai-co-id/chathermes"
+            href="https://github.com/kwkuh/chathermes"
             target="_blank" rel="noopener"
             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-md bg-paper text-ink text-[15px] font-medium hover:bg-paper/90 transition shadow-[0_0_40px_rgba(251,250,246,0.2)]"
           >
@@ -157,7 +157,7 @@ export default function OpenSourcePage() {
             time="~5 min"
             recommended
             desc="The path we recommend. One command, works on macOS / Linux / Windows / WSL. Single SQLite file persists in ./data/."
-            code={`git clone https://github.com/ai-co-id/chathermes.git
+            code={`git clone https://github.com/kwkuh/chathermes.git
 cd chathermes
 ./bin/setup.sh           # interactive .env wizard (60s)
 docker compose up -d
@@ -315,7 +315,7 @@ NOUS_API_KEY=hf_...     # OR KIMI_API_KEY, OR ANTHROPIC_API_KEY, etc. Pick one.`
                 These aren't suggestions. They're the license.
               </p>
               <Link
-                href="https://github.com/ai-co-id/chathermes/blob/master/LICENSE.md"
+                href="https://github.com/kwkuh/chathermes/blob/main/LICENSE.md"
                 target="_blank"
                 className="inline-flex items-center gap-1.5 mt-4 font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.16em] text-amber hover:text-amber-soft"
               >
@@ -374,11 +374,11 @@ NOUS_API_KEY=hf_...     # OR KIMI_API_KEY, OR ANTHROPIC_API_KEY, etc. Pick one.`
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="https://github.com/ai-co-id/chathermes"
+              href="https://github.com/kwkuh/chathermes"
               target="_blank" rel="noopener"
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-md bg-paper text-ink text-[15.5px] font-medium hover:bg-paper/90 transition shadow-[0_0_60px_rgba(251,250,246,0.25)]"
             >
-              <GitBranch size={16} /> github.com/ai-co-id/chathermes <ArrowUpRight size={14} />
+              <GitBranch size={16} /> github.com/kwkuh/chathermes <ArrowUpRight size={14} />
             </a>
             <Link
               href="/auth/login"
