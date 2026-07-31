@@ -495,8 +495,8 @@ function ConversionPitch() {
           </thead>
           <tbody>
             <CompareRow feature="Hermes Agent" free="Shared" pro="Private dedicated server" />
-            <CompareRow feature="Models" free="All 10 — Kimi K2, Hermes 4, Claude, GPT-5" pro="All 10 — Kimi K2, Hermes 4, Claude, GPT-5" />
-            <CompareRow feature="Reasoning specialist" free="Kimi K2 Thinking · included" pro="Kimi K2 Thinking · prioritized" />
+            <CompareRow feature="Models" free="All 10 — Hermes 4, Hermes Agent, Claude, GPT-5" pro="All 10 — Hermes 4, Hermes Agent, Claude, GPT-5" />
+            <CompareRow feature="Reasoning specialist" free="Hermes 4 405B · included" pro="Hermes 4 405B · prioritized" />
             <CompareRow feature="Memory + Skills" free="Yes" pro="Yes" />
             <CompareRow feature="Vibe coding (build apps)" free="Yes" pro="Yes" />
             <CompareRow feature="Public REST API" free="Yes" pro="Yes" />

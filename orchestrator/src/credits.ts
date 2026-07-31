@@ -33,7 +33,7 @@ export const COST: Record<string, number> = {
 // Self-hosters: configure your own rates via env var CHATHERMES_MODEL_RATES
 // as a JSON object. Example:
 //
-//   CHATHERMES_MODEL_RATES='{"moonshotai/kimi-k2.6":1,"openai/gpt-5":6}'
+//   CHATHERMES_MODEL_RATES='{"nousresearch/hermes-4-405b":1,"openai/gpt-5":6}'
 //
 // Default: empty (every model = DEFAULT_RATE). Tune for your margins.
 //

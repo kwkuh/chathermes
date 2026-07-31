@@ -20,7 +20,7 @@ export const CHATHERMES = {
   cloud: "https://chathermes.com",
   license: "ChatHermes Open Source License v1.0 (AGPL-3.0 + Required Attribution)",
   copyright: "Copyright (c) 2026 Getid, Inc. and contributors",
-  built_on: ["Nous Hermes Agent", "Kimi K2", "Hono", "Bun", "Next.js"],
+  built_on: ["Nous Hermes Agent", "Hono", "Bun", "Next.js"],
 } as const;
 
 export const POWERED_BY = `${CHATHERMES.name}/${CHATHERMES.version} (${CHATHERMES.cloud})`;

@@ -41,15 +41,15 @@ const PLACEHOLDERS: Record<Mode, string[]> = {
 const COPY: Record<Mode, { kicker: string; subline: string; sendLabel: string; modelChip: string }> = {
   chat: {
     kicker: "ChatHermes",
-    subline: "no signup until you hit send · powered by Hermes Agent + Kimi K2",
+    subline: "no signup until you hit send · powered by Hermes Agent",
     sendLabel: "Send",
-    modelChip: "kimi-k2",
+    modelChip: "hermes-agent",
   },
   dev: {
     kicker: "ChatHermes.dev",
-    subline: "vibe coding · agent reads + writes + runs code · Hermes Agent + Kimi K2",
+    subline: "vibe coding · agent reads + writes + runs code · Hermes Agent",
     sendLabel: "Build",
-    modelChip: "kimi-k2 · code",
+    modelChip: "hermes-agent · code",
   },
 };
 

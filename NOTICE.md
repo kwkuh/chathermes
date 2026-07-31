@@ -11,7 +11,6 @@ This product includes software licensed under the ChatHermes Open Source License
 
 - **Hermes Agent** by Nous Research (https://github.com/NousResearch/hermes-agent) — MIT/AGPL hybrid. Required for the `hermes-agent` model option to work natively (`:19002`).
 - **Hermes 4** model family by Nous Research (https://huggingface.co/NousResearch) — Llama-based open-weights.
-- **Kimi K2** by Moonshot AI (https://moonshot.ai) — accessed via API.
 - **Hono** (https://hono.dev) — MIT.
 - **Bun** (https://bun.sh) — MIT.
 - **Next.js** (https://nextjs.org) — MIT.

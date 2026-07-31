@@ -1,26 +1,48 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Check, ExternalLink } from "lucide-react";
+import { Check } from "lucide-react";
 import PageHeader from "../_components/page-header";
 import { api } from "@/lib/api";
 
 export default function SettingsPage() {
   const [me, setMe] = useState<any>(null);
-  const [kimi, setKimi] = useState("");
-  const [model, setModel] = useState("kimi-k2-0711-preview");
+  const [apiKey, setApiKey] = useState("");
+  const [model, setModel] = useState("");
+  const [models, setModels] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => { api.me().then((d) => { setMe(d); if (d.settings?.model) setModel(d.settings.model); }).catch(() => {}); }, []);
+  // Model list comes from the providers DB, not a hardcoded list — same source
+  // the chat model picker uses, so the two can never drift apart.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [meR, modR] = await Promise.all([
+          api.me(),
+          fetch("/api/me/models", { credentials: "include" }).then((r) => r.json()),
+        ]);
+        if (cancelled) return;
+        const list = modR.models ?? [];
+        setMe(meR);
+        setModels(list);
+        const def = list.find((m: any) => m.default) ?? list[0];
+        setModel(meR?.settings?.model || def?.model_id || "");
+      } catch {}
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   async function save() {
     setBusy(true);
     try {
       const patch: any = { model };
-      if (kimi.trim()) patch.kimi_api_key = kimi.trim();
+      // Stored in the legacy kimi_api_key column, but read as a generic
+      // per-user key override for whichever model is selected.
+      if (apiKey.trim()) patch.kimi_api_key = apiKey.trim();
       await api.settings.update(patch);
-      setKimi("");
+      setApiKey("");
       setSaved(true);
       const refreshed = await api.me();
       setMe(refreshed);
@@ -56,31 +78,33 @@ export default function SettingsPage() {
         }>
           <div className="px-3 py-3 border-b border-ink-line">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-paper-dim text-[14.5px]">Kimi API key</span>
+              <span className="text-paper-dim text-[14.5px]">Your own API key</span>
               {me?.settings?.has_kimi_key ? (
                 <span className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.14em] px-2 py-0.5 rounded bg-moss/15 text-moss">configured</span>
               ) : (
-                <span className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.14em] px-2 py-0.5 rounded bg-ink-line text-paper-faint">required</span>
+                <span className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.14em] px-2 py-0.5 rounded bg-ink-line text-paper-faint">optional</span>
               )}
             </div>
             <input
-              type="password" value={kimi} onChange={(e) => setKimi(e.target.value)}
+              type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)}
               placeholder={me?.settings?.has_kimi_key ? "•••••••• (paste a new one to replace)" : "sk-…"}
               className="w-full mt-1 px-3 py-2 bg-ink border border-ink-line rounded-md text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/60 text-[14.5px] font-[family-name:var(--font-mono)]"
             />
-            <a href="https://platform.moonshot.ai/console/api-keys" target="_blank" className="inline-flex items-center gap-1 mt-2 text-[13px] text-paper-faint hover:text-amber transition-colors">
-              get a key from moonshot.ai <ExternalLink size={10} />
-            </a>
+            <p className="mt-2 text-[13px] text-paper-faint">
+              Optional. Leave empty to use the platform key for your selected model.
+            </p>
           </div>
           <div className="px-3 py-3 border-b border-ink-line">
             <div className="flex items-center justify-between">
               <span className="text-paper-dim text-[14.5px]">Default model</span>
             </div>
             <select value={model} onChange={(e) => setModel(e.target.value)} className="w-full mt-2 px-3 py-2 bg-ink border border-ink-line rounded-md text-paper text-[14.5px] focus:outline-none focus:border-amber/60 font-[family-name:var(--font-mono)]">
-              <option value="kimi-k2-0711-preview">kimi-k2-0711-preview</option>
-              <option value="moonshot-v1-8k">moonshot-v1-8k</option>
-              <option value="moonshot-v1-32k">moonshot-v1-32k</option>
-              <option value="moonshot-v1-128k">moonshot-v1-128k</option>
+              {models.length === 0 && <option value="">loading…</option>}
+              {models.map((m: any) => (
+                <option key={m.id} value={m.model_id}>
+                  {m.model_id}{m.default ? " (default)" : ""}
+                </option>
+              ))}
             </select>
           </div>
           <Row label="Temperature" value="0.7" />

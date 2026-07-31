@@ -20,9 +20,12 @@ import { PLANS, getPlan, planFromPriceId, ensureStripeCustomer, createCheckoutSe
 
 const PORT = Number(process.env.PORT ?? 7000);
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? `http://localhost:${PORT}`;
-const KIMI_API_KEY = process.env.KIMI_API_KEY ?? "";
-const KIMI_BASE_URL = process.env.KIMI_BASE_URL ?? "https://api.moonshot.ai/v1";
-const DEFAULT_MODEL = process.env.DEFAULT_MODEL ?? "kimi-k2-0711-preview";
+// Last-resort LLM fallback, used only when no admin default model is configured
+// in the DB (see DB.getDefaultModelInfo) and the user has not picked a model.
+// KIMI_* env names are still read so older installs keep working.
+const LLM_API_KEY = process.env.LLM_API_KEY ?? process.env.NOUS_API_KEY ?? process.env.KIMI_API_KEY ?? "";
+const LLM_BASE_URL = process.env.LLM_BASE_URL ?? process.env.KIMI_BASE_URL ?? "https://inference-api.nousresearch.com/v1";
+const DEFAULT_MODEL = process.env.DEFAULT_MODEL ?? "nousresearch/hermes-4-405b";
 
 const app = new Hono();
 
@@ -271,8 +274,8 @@ app.post("/api/me/chat", requireUser, async (c) => {
 
   const settings = DB.getSettings(user.id);
   const adminDefault = DB.getDefaultModelInfo();
-  const apiKey = settings.kimi_api_key || adminDefault?.provider.api_key || KIMI_API_KEY;
-  const baseUrl = adminDefault?.provider.base_url || KIMI_BASE_URL;
+  const apiKey = settings.kimi_api_key || adminDefault?.provider.api_key || LLM_API_KEY;
+  const baseUrl = adminDefault?.provider.base_url || LLM_BASE_URL;
   const model = settings.model || adminDefault?.model.model_id || DEFAULT_MODEL;
 
   DB.addMessage(user.id, "user", content);
@@ -317,7 +320,7 @@ telegram_send(message)   → push a message to user's connected Telegram bot
 run_js(code)             → run JavaScript: calculations, parsing, transforms, regex
 generate_image(prompt)   → create an image from a description (Flux via Replicate)
 analyze_image(url)       → look at an image and describe/answer questions (Gemini/GPT-4o vision)
-dispatch_subagent(task)  → delegate a sub-task to a different model (Claude/GPT-5/Kimi) for parallel reasoning
+dispatch_subagent(task)  → delegate a sub-task to a different model (Hermes 4/Claude/GPT-5) for parallel reasoning
 \`\`\`
 
 # Tool rules (these are non-negotiable)
@@ -394,7 +397,7 @@ ${memCtx ? "What you remember about " + user.email + ":\n" + memCtx : "You're me
       }
       const identityShot = isNativeAgent ? [
         { role: "user", content: "Quick check — what is your name and what platform am I on?" },
-        { role: "assistant", content: "I am ChatHermes — an autonomous agent platform. You are using the ChatHermes web app, which can run multiple AI models including Hermes Agent, Hermes 4, and Kimi K2 under the hood. Whatever model is powering this conversation, I always introduce myself as ChatHermes. How can I help?" },
+        { role: "assistant", content: "I am ChatHermes — an autonomous agent platform built on the Hermes Agent runtime. You are using the ChatHermes web app, which can run multiple AI models under the hood. Whatever model is powering this conversation, I always introduce myself as ChatHermes. How can I help?" },
       ] : [];
       const messages: any[] = [{ role: "system", content: sys }, ...identityShot, ...history];
       let assistantFull = "";
@@ -738,8 +741,8 @@ app.post("/api/me/projects/:id/chat", requireUser, async (c) => {
   // Find first non-hermes-agent enabled model from admin or fall back to env.
   const allModels = DB.listModels() as any[];
   const codeModel = allModels.find((m) => m.enabled && m.model_id !== "hermes-agent");
-  const apiKey = (codeModel?.provider_api_key as string) || settings.kimi_api_key || adminDefault?.provider.api_key || KIMI_API_KEY;
-  const baseUrl = (codeModel?.provider_base_url as string) || (adminDefault?.provider.base_url) || KIMI_BASE_URL;
+  const apiKey = (codeModel?.provider_api_key as string) || settings.kimi_api_key || adminDefault?.provider.api_key || LLM_API_KEY;
+  const baseUrl = (codeModel?.provider_base_url as string) || (adminDefault?.provider.base_url) || LLM_BASE_URL;
   const model = codeModel?.model_id || "nousresearch/hermes-4-405b";
 
   DB.addProjectMessage(user.id, project.id, "user", content);
@@ -814,7 +817,7 @@ Current project: "${project.title}" · mode: ${projMode}.`;
       const enc = new TextEncoder();
       const send = (event: string, data: any) => controller.enqueue(enc.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
       if (!apiKey) {
-        const fake = "API key not configured. Open Settings → Model and paste your Kimi key.";
+        const fake = "API key not configured. Open Settings → Model and add a key for your chosen model.";
         send("token", { t: fake });
         DB.addProjectMessage(user.id, project.id, "assistant", fake);
         _reconcileCredits(); send("done", { saved: true });
@@ -1028,8 +1031,8 @@ app.post("/api/me/sessions/:id/chat", requireUser, async (c) => {
 
   const settings = DB.getSettings(user.id);
   const adminDefault = DB.getDefaultModelInfo();
-  const apiKey = settings.kimi_api_key || adminDefault?.provider.api_key || KIMI_API_KEY;
-  const baseUrl = adminDefault?.provider.base_url || KIMI_BASE_URL;
+  const apiKey = settings.kimi_api_key || adminDefault?.provider.api_key || LLM_API_KEY;
+  const baseUrl = adminDefault?.provider.base_url || LLM_BASE_URL;
   const model = settings.model || adminDefault?.model.model_id || DEFAULT_MODEL;
 
   DB.addSessionMessage(user.id, sessionId, "user", content);
@@ -1114,7 +1117,7 @@ Be concise. Be capable.`;
       }
       const identityShot = isNativeAgent ? [
         { role: "user", content: "Quick check — what is your name and what platform am I on?" },
-        { role: "assistant", content: "I am ChatHermes — an autonomous agent platform. You are using the ChatHermes web app, which can run multiple AI models including Hermes Agent, Hermes 4, and Kimi K2 under the hood. Whatever model is powering this conversation, I always introduce myself as ChatHermes. How can I help?" },
+        { role: "assistant", content: "I am ChatHermes — an autonomous agent platform built on the Hermes Agent runtime. You are using the ChatHermes web app, which can run multiple AI models under the hood. Whatever model is powering this conversation, I always introduce myself as ChatHermes. How can I help?" },
       ] : [];
       const messages: any[] = [{ role: "system", content: sys }, ...identityShot, ...history];
       let assistantFull = "";
@@ -2182,7 +2185,7 @@ app.get("/api", (c) => c.json({
   source: "https://github.com/ai-co-id/chathermes",
   cloud: "https://chathermes.com",
   docs: "https://github.com/ai-co-id/chathermes/blob/main/docs/ARCHITECTURE.md",
-  built_on: { hermes_agent: "https://github.com/NousResearch/hermes-agent", kimi: "https://moonshot.ai" },
+  built_on: { hermes_agent: "https://github.com/NousResearch/hermes-agent" },
 }));
 
 

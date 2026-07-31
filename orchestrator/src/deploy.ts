@@ -92,7 +92,7 @@ export function buildCloudInit(opts: {
   if (opts.resendKey) envLines.push(`RESEND_API_KEY=${opts.resendKey}`);
   if (opts.resendFrom) envLines.push(`RESEND_FROM=${opts.resendFrom}`);
   if (opts.stripeSecret) envLines.push(`STRIPE_SECRET_KEY=${opts.stripeSecret}`);
-  envLines.push(`DEFAULT_MODEL=${opts.llmKeys.kimi ? "moonshotai/kimi-k2.6" : "nousresearch/hermes-4-405b"}`);
+  envLines.push(`DEFAULT_MODEL=nousresearch/hermes-4-405b`);
 
   const envContent = envLines.join("\n");
 

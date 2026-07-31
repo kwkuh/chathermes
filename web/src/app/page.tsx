@@ -167,9 +167,9 @@ export default async function Landing() {
             <div className="font-[family-name:var(--font-mono)] text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.14em] sm:tracking-[0.18em] text-paper-faint flex flex-wrap gap-x-3 sm:gap-x-5 gap-y-1.5">
               <span>built on Hermes Agent</span>
               <span>·</span>
-              <span>Hermes Agent × Kimi K2</span>
+              <span>agents that keep working</span>
               <span>·</span>
-              <span>Nous Research × Moonshot AI</span>
+              <span>your models, your keys</span>
             </div>
           </div>
         </div>
@@ -184,8 +184,6 @@ export default async function Landing() {
           <div className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em]">
             built on{" "}
             <a href="https://hermes-agent.nousresearch.com" className="text-amber">Hermes Agent</a>
-            {" + "}
-            <a href="https://moonshot.ai" className="text-amber">Kimi K2</a>
           </div>
         </div>
       </footer>

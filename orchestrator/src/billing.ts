@@ -46,7 +46,7 @@ export const PLANS: Record<PlanId, Plan> = {
     stripePriceId: "",
     features: [
       "50 messages / month",
-      "Kimi K2 + Hermes 4 (basic)",
+      "Hermes 4 + Hermes Agent (basic)",
       "5 projects / month",
       "Memory up to 50 facts",
       "1 Telegram connector",
@@ -63,7 +63,7 @@ export const PLANS: Record<PlanId, Plan> = {
     features: [
       "Unlimited messages",
       "Hermes Agent native (40+ tools)",
-      "All models — Hermes, Kimi, Claude, GPT, Gemini",
+      "All models — Hermes, Claude, GPT, Gemini, and more",
       "Unlimited projects + public preview",
       "Unlimited memory",
       "Priority queue",

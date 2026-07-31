@@ -13,7 +13,7 @@ export default function HeroIntro() {
         <span className="absolute inset-0 rounded-full bg-amber animate-pulse-soft" />
         <span className="relative w-1.5 h-1.5 rounded-full bg-amber" />
       </span>
-      built on Hermes Agent + Kimi K2
+      built on Hermes Agent
     </motion.div>
   );
 }

@@ -17,9 +17,10 @@ const DATA_ROOT = process.env.DATA_ROOT ?? "./data";
 const PORT_START = Number(process.env.TENANT_PORT_START ?? 7100);
 const PORT_END = Number(process.env.TENANT_PORT_END ?? 7999);
 const ENGINE_IMAGE = process.env.ENGINE_IMAGE ?? "chathermes/engine:latest";
-const KIMI_API_KEY = process.env.KIMI_API_KEY ?? "";
-const KIMI_BASE_URL = process.env.KIMI_BASE_URL ?? "https://api.moonshot.ai/v1";
-const DEFAULT_MODEL = process.env.DEFAULT_MODEL ?? "kimi-k2-0711-preview";
+// KIMI_* env names are still read so older installs keep working.
+const LLM_API_KEY = process.env.LLM_API_KEY ?? process.env.NOUS_API_KEY ?? process.env.KIMI_API_KEY ?? "";
+const LLM_BASE_URL = process.env.LLM_BASE_URL ?? process.env.KIMI_BASE_URL ?? "https://inference-api.nousresearch.com/v1";
+const DEFAULT_MODEL = process.env.DEFAULT_MODEL ?? "nousresearch/hermes-4-405b";
 
 function sh(cmd: string, args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
@@ -68,8 +69,8 @@ export async function startTenant(tenant: DB.Tenant): Promise<DB.Tenant> {
     "-e", `HERMES_HOME=/data/.hermes`,
     "-e", `HERMES_WEBUI_STATE_DIR=/data/state`,
     "-e", `HERMES_WEBUI_DEFAULT_MODEL=${DEFAULT_MODEL}`,
-    "-e", `OPENAI_API_KEY=${KIMI_API_KEY}`,
-    "-e", `OPENAI_BASE_URL=${KIMI_BASE_URL}`,
+    "-e", `OPENAI_API_KEY=${LLM_API_KEY}`,
+    "-e", `OPENAI_BASE_URL=${LLM_BASE_URL}`,
     "-v", `${home}:/data/.hermes`,
     "-v", `${stateDir}:/data/state`,
     "--memory", "512m",

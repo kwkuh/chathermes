@@ -15,7 +15,7 @@ const STEPS = [
   {
     icon: MessageSquare,
     title: "Multi-model chat",
-    body: "Pick from Hermes 4 (405B), Kimi K2 Thinking, Claude Sonnet 4.6, GPT-5, and more — at the model chip below the chat input.",
+    body: "Pick from Hermes Agent, Hermes 4 (405B), Claude Sonnet 4.6, GPT-5, and more — at the model chip below the chat input.",
     cta: "Got it",
   },
   {

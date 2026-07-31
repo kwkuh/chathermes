@@ -13,7 +13,7 @@ const SKILLS = [
   // — productivity —
   { id: "scheduler", icon: Bell, name: "Scheduler", desc: "Natural-language cron. Daily briefings, monitors, recurring tasks at /app/schedules.", cat: "productivity", live: true },
   { id: "telegram", icon: Mail, name: "Telegram push", desc: "Send agent results to your Telegram. Connect at /app/connectors.", cat: "productivity", live: true },
-  { id: "subagent", icon: Sparkles, name: "Subagent dispatch", desc: "Delegate sub-tasks to Kimi K2 Thinking, Claude, or GPT-5 — best-of-breed parallel reasoning.", cat: "productivity", live: true },
+  { id: "subagent", icon: Sparkles, name: "Subagent dispatch", desc: "Delegate sub-tasks to Hermes 4, Claude, or GPT-5 — best-of-breed parallel reasoning.", cat: "productivity", live: true },
   // — creative —
   { id: "imagegen", icon: ImageIcon, name: "Image generation", desc: "Flux (Replicate). Just say 'draw me X' in chat — agent calls generate_image.", cat: "creative", live: true },
   { id: "vision", icon: Eye, name: "Vision analysis", desc: "Look at any image URL — Gemini 2.0 Flash + GPT-4o fallback. Charts, photos, screenshots.", cat: "creative", live: true },

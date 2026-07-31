@@ -115,6 +115,10 @@ ls chathermes-main/press-kit/
 
 ## Built by
 
-[@kwkuh](https://x.com/kwkuh) & [@supercryptolord](https://x.com/supercryptolord) · Jakarta · for the Nous Research × Moonshot AI Hermes Agent Creative Hackathon.
+[@kwkuh](https://x.com/kwkuh) & [@supercryptolord](https://x.com/supercryptolord) · Jakarta.
+
+> **Note:** the narration MP3s below were recorded for the product's first release and
+> still mention Kimi K2 in the audio itself. The transcripts are kept verbatim so they
+> match the files. Re-record before reusing them in new material.
 
 Questions? Open an issue at https://github.com/ai-co-id/chathermes/issues.

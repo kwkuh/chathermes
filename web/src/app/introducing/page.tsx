@@ -792,7 +792,7 @@ function SceneStudio({ progress }: { progress: number }) {
           ChatHermes
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: progress > 0.6 ? 1 : 0, y: progress > 0.6 ? 0 : 10 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.4em] text-amber mt-4">Studios</motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.75 ? 1 : 0 }} transition={{ duration: 0.6 }} className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em] text-white/40 mt-3">Built on Hermes 4 × Kimi K2 Thinking</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.75 ? 1 : 0 }} transition={{ duration: 0.6 }} className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em] text-white/40 mt-3">Built on Hermes 4</motion.div>
       </div>
       <Vignette />
     </div>
@@ -1326,7 +1326,7 @@ function SceneOutro({ progress }: { progress: number }) {
         <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="inline-block mb-6">
           <Image src="/illustrations/mascot-head.png" alt="" width={88} height={88} className="mx-auto" style={{ filter: "drop-shadow(0 0 50px rgba(232,165,71,0.7))" }} />
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.15 ? 1 : 0 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.4em] text-amber mb-4">Hermes Agent × Kimi K2 — A Coworker</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: progress > 0.15 ? 1 : 0 }} transition={{ duration: 0.8 }} className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.4em] text-amber mb-4">Hermes Agent — A Coworker</motion.div>
         <motion.h1 initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: progress > 0.25 ? 1 : 0, scale: progress > 0.25 ? 1 : 0.96 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }} className="font-[family-name:var(--font-display)] text-[clamp(44px,8vw,110px)] leading-[0.95] tracking-[-0.03em] text-white" style={{ textShadow: "0 0 50px rgba(232,165,71,0.3)" }}>Ready when <em className="text-amber italic">you are.</em></motion.h1>
         {progress > 0.85 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.4em] text-white/30 mt-12">⊹ a chathermes studios production ⊹</motion.div>}
         {progress > 0.92 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="font-[family-name:var(--font-mono)] text-[9.5px] tracking-[0.18em] text-white/40 mt-3">written, designed, and shipped by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber" onClick={(e) => e.stopPropagation()}>@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber" onClick={(e) => e.stopPropagation()}>@supercryptolord</a></motion.div>}

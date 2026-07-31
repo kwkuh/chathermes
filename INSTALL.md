@@ -153,7 +153,7 @@ STRIPE_PRICE_TEAM=price_...
 ### Per-model credit pricing
 
 ```
-CHATHERMES_MODEL_RATES={"moonshotai/kimi-k2-thinking":1,"openai/gpt-5":6}
+CHATHERMES_MODEL_RATES={"nousresearch/hermes-4-405b":1,"openai/gpt-5":6}
 CHATHERMES_DEFAULT_RATE=1
 ```
 

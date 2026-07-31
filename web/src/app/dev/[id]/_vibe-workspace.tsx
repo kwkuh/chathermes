@@ -364,7 +364,7 @@ export default function VibeWorkspace({ project: initialProject, initialMessages
               />
               <div className="flex items-center justify-between px-2.5 pb-2.5 -mt-9">
                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-paper-dim text-[11px] font-[family-name:var(--font-mono)]">
-                  <Sparkles size={11} className="text-amber" /> kimi-k2 · code
+                  <Sparkles size={11} className="text-amber" /> hermes-agent · code
                 </div>
                 <button onClick={() => send()} disabled={!draft.trim() || streaming} className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber text-ink hover:bg-amber-soft disabled:bg-ink-line disabled:text-paper-faint disabled:cursor-not-allowed transition-all">
                   <ArrowUp size={14} strokeWidth={2.4} />

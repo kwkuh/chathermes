@@ -138,7 +138,7 @@ export default function DocsPage() {
         {/* CONTENT */}
         <main className="flex-1 min-w-0 px-5 sm:px-10 lg:px-14 py-10 lg:py-14 max-w-[860px] mx-auto">
           <Section id="introduction" title="Introduction" kicker="— what is chathermes">
-            <p className="lede">ChatHermes is an autonomous-agent SaaS built on <strong className="text-paper">Nous Research's Hermes 4</strong> and <strong className="text-paper">Moonshot AI's Kimi K2 Thinking</strong> — the official sponsors of the Hermes Agent Creative Hackathon. It pairs streaming multi-model chat with persistent memory, real tools, and agent infrastructure that lets a paid user spin up their own dedicated server. The same code that runs <a href="https://chathermes.com" className="link">chathermes.com</a> is in this repo.</p>
+            <p className="lede">ChatHermes is an autonomous-agent SaaS built on the <strong className="text-paper">Hermes Agent</strong> runtime and <strong className="text-paper">Nous Research's Hermes 4</strong>. It pairs streaming multi-model chat with persistent memory, real tools, and agent infrastructure that lets a paid user spin up their own dedicated server. The same code that runs <a href="https://chathermes.com" className="link">chathermes.com</a> is in this repo.</p>
             <p>This documentation covers everything you need to: install ChatHermes, configure it, use the public REST API, build skills, integrate Telegram, deploy a private agent, and self-host the whole thing.</p>
             <Callout kind="amber" icon={Sparkles}>
               <strong>New here?</strong> Watch the <Link href="/introducing" className="link">cinematic /introducing demo</Link> first — 17 chapters, ~2 minutes. It shows the entire workflow before you write any code.
@@ -191,8 +191,8 @@ NOUS_API_KEY=hf_...     # OR another LLM provider key — pick one`}</Code>
             <H3>Provider keys</H3>
             <p>You need at least one LLM provider configured. ChatHermes supports:</p>
             <Table head={["Provider", "Env var", "What you get"]} rows={[
-              ["Moonshot AI ★", <code key="1">KIMI_API_KEY</code>, "Kimi K2, K2 Thinking — strong reasoning, hackathon co-sponsor"],
-              ["Nous Research ★", <code key="2">NOUS_API_KEY</code>, "Hermes 4 (405B + 70B), Hermes 3 — open weights, hackathon host"],
+              ["Nous Research ★", <code key="1">NOUS_API_KEY</code>, "Hermes 4 (405B + 70B), Hermes 3 — open weights, proxies other models too"],
+              ["Moonshot AI", <code key="2">KIMI_API_KEY</code>, "Kimi K2, K2 Thinking — optional, for direct Moonshot access"],
               ["Anthropic", <code key="3">ANTHROPIC_API_KEY</code>, "Claude Sonnet 4.6 — best for code"],
               ["OpenAI", <code key="4">OPENAI_API_KEY</code>, "GPT-5 — best general"],
               ["Google", <code key="5">GEMINI_API_KEY</code>, "Gemini 3.1 Pro — best vision"],
@@ -216,7 +216,7 @@ NOUS_API_KEY=hf_...     # OR another LLM provider key — pick one`}</Code>
               ["run_js(code)", "Execute JavaScript expression", "in-process VM"],
               ["generate_image(prompt)", "Create image from text", "Replicate Flux Schnell"],
               ["analyze_image(url, question)", "Vision analysis", "Gemini 2.0 Flash → GPT-4o fallback"],
-              ["dispatch_subagent(task, model)", "Delegate to a different model", "Claude / GPT-5 / Kimi via providers DB"],
+              ["dispatch_subagent(task, model)", "Delegate to a different model", "Hermes 4 / Claude / GPT-5 via providers DB"],
             ]} />
             <Callout kind="amber" icon={Sparkles}>
               <strong>Adding a new tool</strong> means: 1) add to <code>TOOLS</code> array in <code>orchestrator/src/tools.ts</code>, 2) add a <code>case</code> in <code>executeTool()</code> for the dispatch logic, 3) update the system prompt in <code>orchestrator/src/index.ts</code> with the rule for when to call it. PRs welcome.
@@ -232,7 +232,7 @@ NOUS_API_KEY=hf_...     # OR another LLM provider key — pick one`}</Code>
               <li><strong>Persistent memory</strong> — save_memory / recall_memory</li>
               <li><strong>Scheduler</strong> — natural-language cron at <code>/app/schedules</code></li>
               <li><strong>Telegram push</strong> — telegram_send via connector</li>
-              <li><strong>Subagent dispatch</strong> — Claude / GPT-5 / Kimi parallel reasoning</li>
+              <li><strong>Subagent dispatch</strong> — Hermes 4 / Claude / GPT-5 parallel reasoning</li>
               <li><strong>Image generation</strong> — Flux via Replicate</li>
               <li><strong>Vision analysis</strong> — Gemini 2.0 Flash + GPT-4o fallback</li>
               <li><strong>Browser</strong> — browse() + fetch_url()</li>
@@ -396,7 +396,7 @@ if (sig !== expected) {
               ["NODE_ENV",                 "no",        "production | development"],
               ["ADMIN_EMAILS",             "no",        "Comma-separated emails granted admin on signup"],
               ["DATA_ROOT",                "no",        "Where SQLite + tenant volumes live (default ./data)"],
-              ["NOUS_API_KEY",             "1+ needed", "Hermes 4, Hermes 3, Kimi K2 (Nous proxies multiple)"],
+              ["NOUS_API_KEY",             "1+ needed", "Hermes 4, Hermes 3, and other models Nous proxies"],
               ["KIMI_API_KEY",             "1+ needed", "Direct Moonshot Kimi"],
               ["ANTHROPIC_API_KEY",        "1+ needed", "Claude Sonnet 4.6"],
               ["OPENAI_API_KEY",           "1+ needed", "GPT-5"],

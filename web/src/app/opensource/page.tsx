@@ -27,7 +27,7 @@ export default function OpenSourcePage() {
 
       {/* HERO */}
       <section className="px-6 sm:px-10 pt-16 sm:pt-24 pb-16 max-w-[1100px] mx-auto">
-        <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.3em] text-amber mb-2">— ChatHermes × Kimi K2 · Open Source v1.0.0</div>
+        <div className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase tracking-[0.3em] text-amber mb-2">— ChatHermes · Open Source v1.0.0</div>
         <div className="font-[family-name:var(--font-mono)] text-[10.5px] tracking-[0.18em] text-paper-faint mb-6">by <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@supercryptolord</a></div>
         <h1 className="font-[family-name:var(--font-display)] text-[clamp(48px,8vw,108px)] leading-[0.95] tracking-[-0.03em] mb-8">
           We built it<br /><em className="text-amber italic">in the open.</em>
@@ -399,7 +399,7 @@ NOUS_API_KEY=hf_...     # OR KIMI_API_KEY, OR ANTHROPIC_API_KEY, etc. Pick one.`
           </div>
           <div className="flex items-center gap-1.5 text-paper-faint text-[12.5px]">
             <Heart size={11} className="text-amber" />
-            <span>By <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@supercryptolord</a> · Jakarta · Built on <a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener" className="text-paper-dim hover:text-amber">Hermes Agent</a> × <a href="https://moonshot.ai" target="_blank" rel="noopener" className="text-paper-dim hover:text-amber">Kimi K2</a>.</span>
+            <span>By <a href="https://x.com/kwkuh" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@kwkuh</a> & <a href="https://x.com/supercryptolord" target="_blank" rel="noopener" className="text-amber hover:text-amber-soft underline decoration-amber/50 underline-offset-[3px] decoration-[1px] hover:decoration-amber transition">@supercryptolord</a> · Jakarta · Built on <a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener" className="text-paper-dim hover:text-amber">Hermes Agent</a>.</span>
           </div>
         </div>
       </footer>

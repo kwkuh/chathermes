@@ -203,7 +203,7 @@ export async function sendWelcome(opts: { to: string; name?: string }) {
 <p style="margin:0 0 16px 0;color:rgba(43,43,41,0.75);">Your private agent is now spun up and ready. Drop a task, close the tab, come back to a finished thing.</p>
 <p style="margin:0 0 12px 0;color:rgba(43,43,41,0.75);">Three things to try first:</p>
 <ul style="margin:0 0 24px 0;padding-left:20px;color:rgba(43,43,41,0.75);">
-<li style="margin-bottom:10px;"><b>Ask anything.</b> Hermes Agent + Kimi K2 + Hermes 4 are wired up. Pick a model from the chip below the chat input.</li>
+<li style="margin-bottom:10px;"><b>Ask anything.</b> Hermes Agent + Hermes 4 are wired up. Pick a model from the chip below the chat input.</li>
 <li style="margin-bottom:10px;"><b>Vibe-code a project.</b> Try: <i>"Build me a landing page for an indie game called Aether."</i> Watch it paint live, publish to a public URL.</li>
 <li style="margin-bottom:0;"><b>Connect Telegram.</b> Settings → Connectors. The agent pings you when long jobs finish.</li>
 </ul>
