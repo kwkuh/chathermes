@@ -24,6 +24,7 @@ export default async function Landing() {
           <div className="flex items-center gap-4 sm:gap-7">
             <Link href="/introducing" className="hidden sm:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">demo</Link>
             <Link href="/docs" className="hidden md:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">docs</Link>
+            <Link href="/install" className="hidden md:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">install</Link>
             <Link href="/opensource" className="hidden md:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-amber transition-colors uppercase tracking-[0.12em]">open source</Link>
             <a href="#how" className="hidden lg:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">how</a>
             <a href="#vs" className="hidden lg:inline font-[family-name:var(--font-mono)] text-[12px] text-paper-dim hover:text-paper transition-colors uppercase tracking-[0.12em]">vs chatgpt</a>

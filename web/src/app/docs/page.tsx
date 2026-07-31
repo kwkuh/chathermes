@@ -81,6 +81,7 @@ export default function DocsPage() {
         <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-amber border-l border-ink-line/60 pl-3 hidden sm:inline">Docs</span>
         <div className="ml-auto flex items-center gap-4">
           <Link href="/introducing" className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber hidden sm:inline">demo</Link>
+          <Link href="/install" className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber hidden sm:inline">install</Link>
           <Link href="/opensource" className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber hidden sm:inline">open source</Link>
           <Link href="/auth/login" className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-paper-dim hover:text-paper">sign in</Link>
         </div>

@@ -1748,6 +1748,117 @@ app.get("/api/me/models", requireUser, (c) => {
 // Public banner readable (no auth needed)
 app.get("/api/system/banner", (c) => c.json({ banner: DB.getSetting("banner") ?? null }));
 
+// ============================================================
+// HERMES AGENT VERSION — upstream release check for /install
+// ============================================================
+// The version is read from the upstream release feed, never hardcoded, so the
+// installer page cannot go stale. GitHub Releases is authoritative (it carries
+// both the calendar tag and the semver in the release name); PyPI is the
+// fallback. Do NOT scrape hermes-agent.nousresearch.com — the version-looking
+// numbers in that page's markup are style tokens, not release numbers.
+//
+// Cached in memory: unauthenticated GitHub allows 60 req/h per IP, and this
+// route is public.
+
+const HERMES_REPO = "NousResearch/hermes-agent";
+const HERMES_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const HERMES_FETCH_TIMEOUT_MS = 6000;
+
+type HermesRelease = {
+  version: string | null;      // semver, e.g. "0.19.1" — null if upstream stops publishing it
+  tag: string | null;          // calendar tag, e.g. "v2026.7.30"
+  published_at: string | null;
+  url: string;
+  source: "github" | "pypi" | "unavailable";
+  checked_at: string;
+};
+
+let hermesCache: { data: HermesRelease; at: number } | null = null;
+let hermesInFlight: Promise<HermesRelease> | null = null;
+
+// Release name looks like "Hermes Agent v0.19.1 (v2026.7.30)" — pull the semver.
+function semverFrom(...candidates: (string | null | undefined)[]): string | null {
+  for (const s of candidates) {
+    const m = s?.match(/\bv?(\d+\.\d+\.\d+)\b/);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+async function fetchHermesRelease(): Promise<HermesRelease> {
+  const now = new Date().toISOString();
+
+  try {
+    const r = await fetch(`https://api.github.com/repos/${HERMES_REPO}/releases/latest`, {
+      headers: { Accept: "application/vnd.github+json", "User-Agent": "ChatHermes" },
+      signal: AbortSignal.timeout(HERMES_FETCH_TIMEOUT_MS),
+    });
+    if (r.ok) {
+      const j = await r.json() as any;
+      // The calendar tag is not a semver, so only trust the release name for that.
+      return {
+        version: semverFrom(j.name),
+        tag: j.tag_name ?? null,
+        published_at: j.published_at ?? null,
+        url: j.html_url ?? `https://github.com/${HERMES_REPO}/releases`,
+        source: "github",
+        checked_at: now,
+      };
+    }
+  } catch { /* fall through to PyPI */ }
+
+  try {
+    const r = await fetch("https://pypi.org/pypi/hermes-agent/json", {
+      signal: AbortSignal.timeout(HERMES_FETCH_TIMEOUT_MS),
+    });
+    if (r.ok) {
+      const j = await r.json() as any;
+      const v = j?.info?.version ?? null;
+      return {
+        version: v,
+        tag: null,
+        published_at: null,
+        url: "https://pypi.org/project/hermes-agent/",
+        source: "pypi",
+        checked_at: now,
+      };
+    }
+  } catch { /* fall through */ }
+
+  return {
+    version: null, tag: null, published_at: null,
+    url: `https://github.com/${HERMES_REPO}/releases`,
+    source: "unavailable",
+    checked_at: now,
+  };
+}
+
+// Serves cache when fresh. On a stale-but-failed refresh the previous value is
+// kept and returned rather than blanking the page.
+async function getHermesRelease(force = false): Promise<HermesRelease> {
+  if (!force && hermesCache && Date.now() - hermesCache.at < HERMES_TTL_MS) return hermesCache.data;
+  if (hermesInFlight) return hermesInFlight;
+
+  hermesInFlight = (async () => {
+    const fresh = await fetchHermesRelease();
+    if (fresh.source === "unavailable" && hermesCache) return hermesCache.data;
+    hermesCache = { data: fresh, at: Date.now() };
+    return fresh;
+  })().finally(() => { hermesInFlight = null; });
+
+  return hermesInFlight;
+}
+
+app.get("/api/system/hermes-version", async (c) => {
+  const latest = await getHermesRelease(c.req.query("refresh") === "1");
+  return c.json({
+    latest,
+    stale: hermesCache ? Date.now() - hermesCache.at > HERMES_TTL_MS : false,
+    docs: "https://hermes-agent.nousresearch.com/",
+    repo: `https://github.com/${HERMES_REPO}`,
+  });
+});
+
 // Startup banner — Required Attribution per LICENSE.md
 console.log("");
 console.log("  \x1b[33m╔═══════════════════════════════════════╗\x1b[0m");

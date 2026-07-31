@@ -20,6 +20,7 @@ export default function OpenSourcePage() {
         <div className="ml-auto flex items-center gap-5">
           <Link href="/introducing" className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber transition">demo</Link>
           <Link href="/docs" className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber transition">docs</Link>
+          <Link href="/install" className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.16em] text-paper-dim hover:text-amber transition">install</Link>
           <Link href="/opensource" className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.16em] text-amber">open source</Link>
           <Link href="/auth/login" className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.16em] text-paper-dim hover:text-paper transition">sign in</Link>
         </div>
