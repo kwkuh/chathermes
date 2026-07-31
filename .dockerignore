@@ -1,0 +1,14 @@
+# Keep the build context small and free of host-side state.
+**/node_modules
+**/.next
+.git
+data
+hermes-agent
+engine-ref
+ui
+landing
+*.tgz
+SECRETS*.md
+**/.env
+**/.env.*
+!**/.env.example

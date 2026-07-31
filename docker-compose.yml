@@ -1,0 +1,38 @@
+# ChatHermes — one service, one volume.
+#
+#   cp orchestrator/.env.example .env    # then fill in SESSION_SECRET + one LLM key
+#   docker compose up -d
+#   open http://localhost:7000
+#
+# This is also what the one-click cloud-init deploy runs on a fresh server, and
+# what Coolify / Dokploy / Portainer / CapRover pick up when they import the repo.
+
+services:
+  chathermes:
+    build: .
+    image: chathermes:latest
+    container_name: chathermes
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-7000}:7000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATA_ROOT: /data
+      PORT: "7010"
+      WEB_PORT: "7000"
+      ORCH_URL: http://127.0.0.1:7010
+    volumes:
+      # SQLite plus every tenant's agent home. This is the only state that matters —
+      # back this up and you have backed up the whole install.
+      - chathermes-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:7000/api/status >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 25s
+      retries: 3
+
+volumes:
+  chathermes-data:

@@ -7,13 +7,35 @@ import PageHeader from "../../app/_components/page-header";
 type Provider = { id: string; name: string; kind: string; base_url: string; api_key: string | null; enabled: number };
 type Model = { id: string; provider_id: string; provider_name: string; model_id: string; label: string; context_window: number | null; is_default: number; enabled: number };
 
+// Anything speaking the OpenAI wire format works without code changes — these
+// presets only save typing. Local runtimes are included so a self-hoster can
+// run the whole platform without a hosted key.
 const PRESETS = [
+  // Hermes-native
   { name: "Nous (Hermes native)", kind: "openai-compatible", base_url: "https://inference-api.nousresearch.com/v1" },
-  { name: "Kimi (Moonshot)", kind: "openai-compatible", base_url: "https://api.moonshot.ai/v1" },
+  { name: "Hermes Agent (local runtime)", kind: "openai-compatible", base_url: "http://127.0.0.1:19002/v1" },
+  // Frontier
   { name: "OpenAI", kind: "openai", base_url: "https://api.openai.com/v1" },
   { name: "Anthropic", kind: "anthropic", base_url: "https://api.anthropic.com/v1" },
-  { name: "Together AI", kind: "openai-compatible", base_url: "https://api.together.xyz/v1" },
+  { name: "Google Gemini", kind: "openai-compatible", base_url: "https://generativelanguage.googleapis.com/v1beta/openai" },
+  { name: "xAI Grok", kind: "openai-compatible", base_url: "https://api.x.ai/v1" },
+  { name: "Mistral", kind: "openai-compatible", base_url: "https://api.mistral.ai/v1" },
+  { name: "DeepSeek", kind: "openai-compatible", base_url: "https://api.deepseek.com/v1" },
+  { name: "Kimi (Moonshot)", kind: "openai-compatible", base_url: "https://api.moonshot.ai/v1" },
+  // Aggregators — one key, many models
+  { name: "OpenRouter", kind: "openai-compatible", base_url: "https://openrouter.ai/api/v1" },
+  // Fast inference hosts
   { name: "Groq", kind: "openai-compatible", base_url: "https://api.groq.com/openai/v1" },
+  { name: "Together AI", kind: "openai-compatible", base_url: "https://api.together.xyz/v1" },
+  { name: "Fireworks AI", kind: "openai-compatible", base_url: "https://api.fireworks.ai/inference/v1" },
+  { name: "DeepInfra", kind: "openai-compatible", base_url: "https://api.deepinfra.com/v1/openai" },
+  { name: "Cerebras", kind: "openai-compatible", base_url: "https://api.cerebras.ai/v1" },
+  { name: "Perplexity", kind: "openai-compatible", base_url: "https://api.perplexity.ai" },
+  // Run it yourself — no key needed, paste any non-empty string
+  { name: "Ollama (local)", kind: "openai-compatible", base_url: "http://127.0.0.1:11434/v1" },
+  { name: "LM Studio (local)", kind: "openai-compatible", base_url: "http://127.0.0.1:1234/v1" },
+  { name: "vLLM (self-hosted)", kind: "openai-compatible", base_url: "http://127.0.0.1:8000/v1" },
+  { name: "llama.cpp server (local)", kind: "openai-compatible", base_url: "http://127.0.0.1:8080/v1" },
   { name: "Custom (OpenAI-compatible)", kind: "openai-compatible", base_url: "" },
 ];
 

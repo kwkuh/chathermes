@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Terminal, Server, Cloud, Copy, Check, RefreshCw, ArrowUpRight,
-  CircleAlert, Package, BookOpen,
+  CircleAlert, Package, BookOpen, Container,
 } from "lucide-react";
 
 type HermesLatest = {
@@ -188,6 +188,17 @@ systemctl enable --now chathermes-orch chathermes-web chathermes-hermes-proxy`}
         />
 
         <Path
+          icon={Container}
+          title="Docker"
+          time="~2 min"
+          desc="One image runs all three processes and keeps every byte of state in one volume. This is the path that works on any platform that can run a container."
+          code={`git clone ${REPO}.git && cd chathermes
+cp orchestrator/.env.example .env    # set SESSION_SECRET + one LLM key
+docker compose up -d`}
+          after="On macOS, port 7000 is taken by AirPlay Receiver — run WEB_PORT=7600 docker compose up -d, or turn AirPlay off in System Settings."
+        />
+
+        <Path
           icon={Cloud}
           title="One-click to Hetzner"
           time="~2 min"
@@ -196,6 +207,73 @@ systemctl enable --now chathermes-orch chathermes-web chathermes-hermes-proxy`}
 #   Admin → Hetzner → pick server type + region → Deploy`}
           after="Needs HETZNER_API_TOKEN in the orchestrator env. Gated by default: an admin approves every spawn."
         />
+      </section>
+
+      {/* ANY CLOUD */}
+      <section className="px-6 sm:px-10 pb-16 max-w-[900px] mx-auto">
+        <h2 className="font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] tracking-[-0.02em] mb-3">Any other cloud</h2>
+        <p className="text-paper-dim text-[15.5px] leading-[1.6] mb-6 max-w-[68ch]">
+          Hetzner is wired into the admin panel because that is what the hosted product
+          uses. Nothing about ChatHermes is tied to it. Paste the block below as
+          <span className="text-paper"> user data</span> when you create a server and it
+          installs itself on first boot — same script the one-click deploy runs.
+        </p>
+
+        <CodeBlock code={`#cloud-config
+package_update: true
+packages: [docker.io, docker-compose-plugin, git]
+write_files:
+  - path: /opt/chathermes/.env
+    permissions: '0600'
+    content: |
+      SESSION_SECRET=REPLACE_WITH_openssl_rand_hex_32
+      PUBLIC_BASE_URL=https://your-domain.com
+      NOUS_API_KEY=REPLACE_OR_USE_ANOTHER_PROVIDER
+      DATA_ROOT=/data
+runcmd:
+  - systemctl enable --now docker
+  - git clone ${REPO}.git /opt/chathermes/repo
+  - cp -r /opt/chathermes/repo/. /opt/chathermes/
+  - cd /opt/chathermes && docker compose up -d --build`} />
+
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-3 mt-7">
+          <ProviderNote name="DigitalOcean" note="Droplet → Advanced → Add Initialization scripts (user data). Or: doctl compute droplet create --user-data-file cloud-init.yml" />
+          <ProviderNote name="Vultr" note="Deploy → Advanced → Cloud-Init User-Data. Or: vultr-cli instance create --userdata" />
+          <ProviderNote name="Linode / Akamai" note="Create Linode → Advanced → Metadata → User Data (needs a metadata-enabled region)" />
+          <ProviderNote name="AWS EC2 / Lightsail" note="Launch instance → Advanced details → User data. Ubuntu images ship with cloud-init" />
+          <ProviderNote name="Google Cloud" note="Create VM → Advanced → Automation → Startup script (paste the runcmd lines as a shell script)" />
+          <ProviderNote name="Azure" note="VM → Advanced → Custom data and cloud init" />
+          <ProviderNote name="Scaleway" note="Instance → Advanced settings → cloud-init" />
+          <ProviderNote name="OVHcloud" note="Public Cloud instance → Post-installation script" />
+          <ProviderNote name="Oracle Cloud" note="Instance → Advanced options → Cloud-init script. The Always Free ARM tier fits this comfortably" />
+          <ProviderNote name="Contabo / Netcup" note="Any Ubuntu image: SSH in and run the runcmd lines by hand" />
+        </div>
+
+        <p className="text-paper-faint text-[13.5px] leading-[1.6] mt-6">
+          Anything that boots Ubuntu with cloud-init works. If your provider has no user-data
+          field, SSH in and run the four <code className="text-paper-dim">runcmd</code> lines.
+        </p>
+      </section>
+
+      {/* PAAS */}
+      <section className="px-6 sm:px-10 pb-16 max-w-[900px] mx-auto">
+        <h2 className="font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] tracking-[-0.02em] mb-3">Platforms and panels</h2>
+        <p className="text-paper-dim text-[15.5px] leading-[1.6] mb-6 max-w-[68ch]">
+          Point any of these at the repo. They read the Dockerfile, build it, and run it.
+          Two things to set everywhere: <code className="text-paper">SESSION_SECRET</code>,
+          and a persistent volume on <code className="text-paper">/data</code> — without the
+          volume your database disappears on the next deploy.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-3">
+          <ProviderNote name="Coolify" note="New Resource → Docker Compose → point at the repo. Self-hosted PaaS on your own box" />
+          <ProviderNote name="Dokploy" note="Create Application → Docker → repo URL. Add a volume mount for /data" />
+          <ProviderNote name="Railway" note="Deploy from GitHub repo. Attach a volume at /data, set the port to 7000" />
+          <ProviderNote name="Render" note="New Web Service → Docker. Add a persistent disk mounted at /data" />
+          <ProviderNote name="Fly.io" note="fly launch reads the Dockerfile. Create a volume and mount it at /data" />
+          <ProviderNote name="CapRover" note="One-click app from Dockerfile, with a persistent directory on /data" />
+          <ProviderNote name="Portainer" note="Stacks → paste docker-compose.yml from the repo" />
+          <ProviderNote name="Any Kubernetes" note="One image, one PVC on /data, one service on port 7000" />
+        </div>
       </section>
 
       {/* AFTER */}
@@ -247,6 +325,15 @@ function Path({ icon: Icon, title, time, desc, code, after, link }: {
           </a>
         )}
       </p>
+    </div>
+  );
+}
+
+function ProviderNote({ name, note }: { name: string; note: string }) {
+  return (
+    <div className="border-t border-ink-line/50 pt-2.5">
+      <div className="text-paper text-[14.5px] mb-0.5">{name}</div>
+      <div className="text-paper-faint text-[13px] leading-[1.5]">{note}</div>
     </div>
   );
 }

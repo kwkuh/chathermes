@@ -84,6 +84,15 @@ cd chathermes
 # -> open http://localhost:7000
 ```
 
+Or with Docker — one image, one volume, works anywhere a container runs:
+
+```bash
+cp orchestrator/.env.example .env    # set SESSION_SECRET + one LLM key
+docker compose up -d
+```
+
+On macOS port 7000 belongs to AirPlay Receiver; use `WEB_PORT=7600 docker compose up -d`.
+
 Sign in with any email. Magic link prints to orchestrator log if you skipped Resend. Done.
 
 ```bash
@@ -91,7 +100,9 @@ Sign in with any email. Magic link prints to orchestrator log if you skipped Res
 ./bin/stop.sh         # shut down
 ```
 
-Requires Bun >= 1.3. For systemd / one-click Hetzner / production: see [INSTALL.md](./INSTALL.md).
+Requires Bun >= 1.3 (or just Docker). For systemd, production hardening, and HTTPS: see [INSTALL.md](./INSTALL.md).
+
+**Deploy it anywhere.** The admin panel one-clicks to Hetzner, but nothing is tied to it — the same cloud-init block works as user data on DigitalOcean, Vultr, Linode, Scaleway, OVH, AWS, Google Cloud, Azure, Oracle Cloud, and Contabo. Container platforms read the Dockerfile directly: Coolify, Dokploy, Railway, Render, Fly.io, CapRover, Portainer, or plain Kubernetes. Copy-paste blocks for each are on [/install](https://chathermes.com/install).
 
 See [INSTALL.md](./INSTALL.md) for production setup (HTTPS, Stripe, Resend domain, Hermes Agent native).
 

@@ -165,7 +165,12 @@ export type Tenant = {
 export const newId = () => randomUUID();
 export const now = () => Date.now();
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "").split(",").map((s) => s.trim().toLowerCase());
+// Fail-closed: with the env unset this must be empty, not [""] — an empty
+// string in the list is a value an empty email would match.
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
 
 export function upsertUser(email: string, name?: string): User {
   const existing = db.query("SELECT * FROM users WHERE email = ?").get(email) as User | undefined;
