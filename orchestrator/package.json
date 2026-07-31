@@ -7,7 +7,9 @@
     "start": "bun src/index.ts"
   },
   "dependencies": {
+    "@types/nodemailer": "^8.0.1",
     "hono": "^4.6.0",
+    "nodemailer": "^9.0.3",
     "resend": "^6.12.2",
     "stripe": "^22.1.0"
   },

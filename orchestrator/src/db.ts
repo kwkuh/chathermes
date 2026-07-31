@@ -9,9 +9,14 @@ import { randomUUID } from "node:crypto";
 
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+
+// DATA_ROOT is the single knob for where state lives — the installer, the
+// cloud-init deploy, and the container image all set it. DB_PATH still wins if
+// set explicitly. Hardcoding /opt/chathermes here would send the database
+// outside the mounted volume on any container deploy.
 const DATA_ROOT = process.env.DATA_ROOT ?? "./data";
 const DB_PATH = process.env.DB_PATH ?? `${DATA_ROOT}/orchestrator.db`;
-// Auto-create parent dir if missing (fresh installs do not crash)
+// Fresh installs should not crash just because the directory is not there yet.
 try { mkdirSync(dirname(DB_PATH), { recursive: true }); } catch {}
 
 export const db = new Database(DB_PATH, { create: true });
@@ -165,8 +170,12 @@ export type Tenant = {
 export const newId = () => randomUUID();
 export const now = () => Date.now();
 
-// Fail-closed: with the env unset this must be empty, not [""] — an empty
-// string in the list is a value an empty email would match.
+// Daftar email yang otomatis dapat role "admin" saat pertama kali daftar.
+// Sumbernya HANYA env ADMIN_EMAILS (dipisah koma) — fail-closed: kalau env tidak
+// diisi, tidak ada satu pun akun yang otomatis jadi admin.
+// JANGAN pernah menaruh email asli sebagai nilai default di sini: file ini ter-track
+// git, dan default semacam itu = pemberian hak admin yang ikut ter-commit.
+// Nilai yang dipakai di produksi ada di SECRETS.local.md (gitignored) + .env server.
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .split(",")
   .map((s) => s.trim().toLowerCase())
@@ -397,6 +406,22 @@ db.exec(`
     value TEXT NOT NULL,
     updated_at INTEGER NOT NULL
   );
+  -- Plans used to be a constant in billing.ts, which meant changing a price
+  -- required a code edit and a redeploy. They live here so the admin panel can
+  -- edit them; billing.ts seeds this table from its defaults on first boot.
+  CREATE TABLE IF NOT EXISTS plans (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    price_cents INTEGER NOT NULL DEFAULT 0,
+    currency TEXT NOT NULL DEFAULT 'usd',
+    interval TEXT NOT NULL DEFAULT 'month',
+    stripe_price_id TEXT NOT NULL DEFAULT '',
+    features TEXT NOT NULL DEFAULT '[]',
+    limits TEXT NOT NULL DEFAULT '{}',
+    sort INTEGER NOT NULL DEFAULT 0,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    updated_at INTEGER NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS api_tokens (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
@@ -590,6 +615,67 @@ export function getDefaultModelInfo(): { provider: Provider; model: LLMModel } |
 }
 
 // System settings (k/v)
+// ── Plans ───────────────────────────────────────────────────────────
+// Rows are the source of truth once seeded. billing.ts owns the shape.
+
+export type PlanRow = {
+  id: string; name: string; price_cents: number; currency: string; interval: string;
+  stripe_price_id: string; features: string; limits: string; sort: number; enabled: number;
+  updated_at: number;
+};
+
+export function listPlanRows(): PlanRow[] {
+  return db.query("SELECT * FROM plans ORDER BY sort ASC, price_cents ASC").all() as PlanRow[];
+}
+
+export function getPlanRow(id: string): PlanRow | null {
+  return (db.query("SELECT * FROM plans WHERE id = ?").get(id) as PlanRow) ?? null;
+}
+
+export function upsertPlanRow(p: {
+  id: string; name: string; price_cents: number; currency?: string; interval?: string;
+  stripe_price_id?: string; features?: string; limits?: string; sort?: number; enabled?: number;
+}): PlanRow {
+  const existing = getPlanRow(p.id);
+  const row: PlanRow = {
+    id: p.id,
+    name: p.name,
+    price_cents: p.price_cents,
+    currency: p.currency ?? existing?.currency ?? "usd",
+    interval: p.interval ?? existing?.interval ?? "month",
+    stripe_price_id: p.stripe_price_id ?? existing?.stripe_price_id ?? "",
+    features: p.features ?? existing?.features ?? "[]",
+    limits: p.limits ?? existing?.limits ?? "{}",
+    sort: p.sort ?? existing?.sort ?? 0,
+    enabled: p.enabled ?? existing?.enabled ?? 1,
+    updated_at: now(),
+  };
+  db.run(
+    `INSERT INTO plans (id, name, price_cents, currency, interval, stripe_price_id, features, limits, sort, enabled, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       name=excluded.name, price_cents=excluded.price_cents, currency=excluded.currency,
+       interval=excluded.interval, stripe_price_id=excluded.stripe_price_id,
+       features=excluded.features, limits=excluded.limits, sort=excluded.sort,
+       enabled=excluded.enabled, updated_at=excluded.updated_at`,
+    [row.id, row.name, row.price_cents, row.currency, row.interval, row.stripe_price_id,
+     row.features, row.limits, row.sort, row.enabled, row.updated_at]
+  );
+  return row;
+}
+
+// "free" is the fallback every unsubscribed user lands on, so it cannot be
+// removed — deleting it would leave those users pointing at nothing.
+export function deletePlanRow(id: string): boolean {
+  if (id === "free") return false;
+  db.run("DELETE FROM plans WHERE id = ?", [id]);
+  return true;
+}
+
+export function countPlanRows(): number {
+  return ((db.query("SELECT COUNT(*) as n FROM plans").get() as any)?.n ?? 0) as number;
+}
+
 export function getSetting(key: string): string | null {
   const r = db.query("SELECT value FROM system_settings WHERE key = ?").get(key) as { value: string } | undefined;
   return r?.value ?? null;
@@ -798,7 +884,13 @@ export function setSubscription(userId: string, patch: Partial<Subscription>): S
 export function changeUserPlan(userId: string, plan: string): Subscription {
   const cur = getSubscription(userId);
   // Generate invoice for plan change
-  const planMeta = (PLANS as any)[plan];
+  // Read the price from the plans table, not the legacy PLANS constant below.
+  // The two had drifted: the constant priced Team at $50 while billing.ts and
+  // the pricing page said $99, so a plan change invoiced the wrong amount.
+  const planRow = getPlanRow(plan);
+  const planMeta = planRow
+    ? { name: planRow.name, price_cents: planRow.price_cents }
+    : (PLANS as any)[plan];
   if (planMeta && planMeta.price_cents > 0 && cur.plan !== plan) {
     const inv: Invoice = {
       id: newId(), user_id: userId, amount_cents: planMeta.price_cents, currency: "USD",

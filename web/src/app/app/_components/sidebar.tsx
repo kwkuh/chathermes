@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
 import {
   MessageSquare, Brain, Sparkles, Clock4, Plug, Settings2,
-  Shield, LayoutDashboard, Users, Server, Boxes, Code2, X, Activity, Database, Cpu, Sliders, KeyRound, Plus, Trash2, Webhook, CreditCard, UserCircle, Mail, Cloud,
-} from "lucide-react";
+  Shield, LayoutDashboard, Users, Server, Boxes, Code2, X, Activity, Database, Cpu, Sliders, KeyRound, Plus, Trash2, Webhook, CreditCard, UserCircle, Mail, Cloud, Tags, SlidersHorizontal} from "lucide-react";
 
 type User = { id: string; email: string; role: "user" | "admin" };
 type Session = { id: string; title: string; last_message_at: number };
@@ -31,6 +30,8 @@ const adminNav = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/sessions", label: "Sessions", icon: KeyRound },
   { href: "/admin/billing", label: "Billing", icon: CreditCard },
+  { href: "/admin/plans", label: "Plans & pricing", icon: Tags },
+  { href: "/admin/config", label: "Configuration", icon: SlidersHorizontal },
   { href: "/admin/email", label: "Email", icon: Mail },
   { href: "/admin/llm", label: "LLM & models", icon: Cpu },
   { href: "/admin/settings", label: "Settings", icon: Sliders },

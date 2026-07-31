@@ -8,16 +8,91 @@
 // Plus: audiences sync, domain setup helper, batch send, scheduled send.
 
 import { Resend } from "resend";
+import nodemailer from "nodemailer";
+import * as Config from "./config";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const RESEND_FROM = process.env.RESEND_FROM || "ChatHermes <onboarding@resend.dev>";
-const REPLY_TO = process.env.RESEND_REPLY_TO || "hello@chathermes.com";
-const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "http://localhost:7000";
+// Email has two backends. Resend needs a verified domain, which is a real
+// barrier for someone self-hosting on their own box; SMTP works with anything
+// they already have (Postmark, SES, Mailgun, Fastmail, a company relay).
+//
+// Both are built on demand from config, so keys pasted into the admin panel
+// apply without a restart. With neither configured, mail is logged instead of
+// sent — a fresh install still works, magic links just appear in the log.
+
+function resendKey() { return Config.get("RESEND_API_KEY") ?? ""; }
+function smtpHost() { return Config.get("SMTP_HOST") ?? ""; }
+
+/** "resend" | "smtp" | "" — explicit setting wins, else whatever is configured. */
+export function emailProvider(): "resend" | "smtp" | "" {
+  const explicit = (Config.get("EMAIL_PROVIDER") ?? "").toLowerCase().trim();
+  if (explicit === "resend") return resendKey() ? "resend" : "";
+  if (explicit === "smtp") return smtpHost() ? "smtp" : "";
+  if (resendKey()) return "resend";
+  if (smtpHost()) return "smtp";
+  return "";
+}
+
+let _resend: Resend | null = null;
+let _resendKey = "";
+function resendClient(): Resend | null {
+  const k = resendKey();
+  if (!k) { _resend = null; _resendKey = ""; return null; }
+  if (!_resend || k !== _resendKey) { _resend = new Resend(k); _resendKey = k; }
+  return _resend;
+}
+
+let _smtp: nodemailer.Transporter | null = null;
+let _smtpSig = "";
+function smtpClient(): nodemailer.Transporter | null {
+  const host = smtpHost();
+  if (!host) { _smtp = null; _smtpSig = ""; return null; }
+  const port = Config.getNumber("SMTP_PORT", 587);
+  const user = Config.get("SMTP_USER") ?? "";
+  const pass = Config.get("SMTP_PASS") ?? "";
+  // Port 465 is TLS from the first byte; 587 upgrades via STARTTLS.
+  const secure = Config.get("SMTP_SECURE") !== null ? Config.getBool("SMTP_SECURE") : port === 465;
+  const sig = `${host}:${port}:${user}:${pass}:${secure}`;
+  if (!_smtp || sig !== _smtpSig) {
+    _smtp = nodemailer.createTransport({
+      host, port, secure,
+      auth: user || pass ? { user, pass } : undefined,
+    });
+    _smtpSig = sig;
+  }
+  return _smtp;
+}
+
+/** Checks the connection without sending anything. Used by the admin panel. */
+export async function verifyTransport(): Promise<{ ok: boolean; provider: string; error?: string }> {
+  const provider = emailProvider();
+  if (!provider) return { ok: false, provider: "", error: "No email provider configured" };
+  if (provider === "resend") return { ok: true, provider };
+  try {
+    const t = smtpClient();
+    if (!t) return { ok: false, provider, error: "SMTP host missing" };
+    await t.verify();
+    return { ok: true, provider };
+  } catch (e: any) {
+    return { ok: false, provider, error: String(e?.message || e) };
+  }
+}
+
+function fromAddress(): string {
+  return Config.get("SMTP_FROM")
+    ?? Config.get("RESEND_FROM")
+    ?? "ChatHermes <onboarding@resend.dev>";
+}
+function replyToAddress(): string {
+  return Config.getOr("RESEND_REPLY_TO", "hello@chathermes.com");
+}
+
+const RESEND_FROM_FN = fromAddress;
+const REPLY_TO_FN = replyToAddress;
+const PUBLIC_BASE_URL = Config.getOr("PUBLIC_BASE_URL", "http://localhost:7000");
 const RESEND_AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID || ""; // optional: contact list
 
-const resend: Resend | null = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
-export const isEmailEnabled = () => resend !== null;
-export const getResend = () => resend;
+export const isEmailEnabled = () => emailProvider() !== "";
+export const getResend = () => resendClient();
 
 // ============================================================
 // CORE SEND HELPERS
@@ -38,16 +113,39 @@ type SendInput = {
 };
 
 export async function send(input: SendInput): Promise<{ ok: boolean; id?: string; error?: string }> {
-  if (!resend) {
+  const provider = emailProvider();
+
+  if (!provider) {
     const tos = Array.isArray(input.to) ? input.to.join(",") : input.to;
     console.log(`[email:dev] to=${tos} subject=${input.subject}`);
     return { ok: true, id: "dev_" + Date.now() };
   }
+
+  if (provider === "smtp") {
+    try {
+      const t = smtpClient()!;
+      const res = await t.sendMail({
+        from: input.from || fromAddress(),
+        to: Array.isArray(input.to) ? input.to.join(", ") : input.to,
+        replyTo: input.reply_to || replyToAddress(),
+        subject: input.subject,
+        html: input.html,
+        text: input.text || stripHtml(input.html),
+      });
+      return { ok: true, id: res.messageId };
+    } catch (e: any) {
+      console.error("[email:smtp:throw]", e);
+      return { ok: false, error: String(e?.message || e) };
+    }
+  }
+
+  const resend = resendClient();
+  if (!resendClient()) return { ok: false, error: "Resend not configured" };
   try {
     const payload: any = {
-      from: input.from || RESEND_FROM,
+      from: input.from || RESEND_FROM_FN(),
       to: Array.isArray(input.to) ? input.to : [input.to],
-      reply_to: input.reply_to || REPLY_TO,
+      reply_to: input.reply_to || REPLY_TO_FN(),
       subject: input.subject,
       html: input.html,
       text: input.text || stripHtml(input.html),
@@ -56,7 +154,7 @@ export async function send(input: SendInput): Promise<{ ok: boolean; id?: string
     if (input.idempotency_key) payload.idempotency_key = input.idempotency_key;
     if (input.scheduled_at) payload.scheduled_at = input.scheduled_at;
 
-    const res = await resend.emails.send(payload);
+    const res = await resendClient()!.emails.send(payload);
     const err = (res as any).error;
     if (err) {
       console.error("[email:resend:error]", err);
@@ -71,24 +169,24 @@ export async function send(input: SendInput): Promise<{ ok: boolean; id?: string
 
 // Batch — up to 100 emails in one API call (use for digests)
 export async function sendBatch(emails: SendInput[]): Promise<{ ok: boolean; ids?: string[]; error?: string }> {
-  if (!resend) {
+  if (!resendClient()) {
     console.log(`[email:dev] batch size=${emails.length}`);
     return { ok: true, ids: emails.map((_, i) => "dev_batch_" + i) };
   }
   try {
     const items = emails.map((e) => ({
-      from: e.from || RESEND_FROM,
+      from: e.from || RESEND_FROM_FN(),
       to: Array.isArray(e.to) ? e.to : [e.to],
-      reply_to: e.reply_to || REPLY_TO,
+      reply_to: e.reply_to || REPLY_TO_FN(),
       subject: e.subject,
       html: e.html,
       text: e.text || stripHtml(e.html),
       tags: e.tags,
     }));
     // Resend SDK v6: batch sending — try `emails.batch.send`, fall back to per-email
-    const r: any = (resend.emails as any).batch?.send
-      ? await (resend.emails as any).batch.send(items)
-      : await Promise.all(items.map((it) => resend.emails.send(it as any)));
+    const r: any = (resendClient()!.emails as any).batch?.send
+      ? await (resendClient()!.emails as any).batch.send(items)
+      : await Promise.all(items.map((it) => resendClient()!.emails.send(it as any)));
     const ids = Array.isArray(r) ? r.map((x: any) => x?.data?.id).filter(Boolean) : ((r as any)?.data?.data || []).map((x: any) => x?.id);
     return { ok: true, ids };
   } catch (e: any) {
@@ -527,7 +625,7 @@ ${top ? `<p style="margin:0 0 8px 0;color:rgba(43,43,41,0.55);font-size:13px;">T
 export async function addToAudience(email: string, opts?: { firstName?: string; lastName?: string }): Promise<{ ok: boolean; id?: string; error?: string }> {
   if (!resend || !RESEND_AUDIENCE_ID) return { ok: false, error: "audience not configured" };
   try {
-    const r: any = await resend.contacts.create({
+    const r: any = await resendClient()!.contacts.create({
       audienceId: RESEND_AUDIENCE_ID,
       email,
       firstName: opts?.firstName,
@@ -544,7 +642,7 @@ export async function addToAudience(email: string, opts?: { firstName?: string; 
 export async function removeFromAudience(email: string): Promise<{ ok: boolean; error?: string }> {
   if (!resend || !RESEND_AUDIENCE_ID) return { ok: false, error: "audience not configured" };
   try {
-    await resend.contacts.remove({ audienceId: RESEND_AUDIENCE_ID, email } as any);
+    await resendClient()!.contacts.remove({ audienceId: RESEND_AUDIENCE_ID, email } as any);
     return { ok: true };
   } catch (e: any) {
     return { ok: false, error: String(e?.message || e) };
@@ -556,9 +654,9 @@ export async function removeFromAudience(email: string): Promise<{ ok: boolean; 
 // ============================================================
 
 export async function setupDomain(name: string): Promise<{ ok: boolean; id?: string; records?: any[]; error?: string }> {
-  if (!resend) return { ok: false, error: "resend not configured" };
+  if (!resendClient()) return { ok: false, error: "resend not configured" };
   try {
-    const r: any = await resend.domains.create({ name } as any);
+    const r: any = await resendClient()!.domains.create({ name } as any);
     if (r?.error) return { ok: false, error: String(r.error?.message || r.error) };
     return { ok: true, id: r?.data?.id, records: r?.data?.records };
   } catch (e: any) {
@@ -567,9 +665,9 @@ export async function setupDomain(name: string): Promise<{ ok: boolean; id?: str
 }
 
 export async function listDomains(): Promise<{ ok: boolean; domains?: any[]; error?: string }> {
-  if (!resend) return { ok: false, error: "resend not configured" };
+  if (!resendClient()) return { ok: false, error: "resend not configured" };
   try {
-    const r: any = await resend.domains.list();
+    const r: any = await resendClient()!.domains.list();
     return { ok: true, domains: (r?.data?.data ?? r?.data ?? []) };
   } catch (e: any) {
     return { ok: false, error: String(e?.message || e) };
@@ -577,9 +675,9 @@ export async function listDomains(): Promise<{ ok: boolean; domains?: any[]; err
 }
 
 export async function verifyDomain(id: string): Promise<{ ok: boolean; status?: string; error?: string }> {
-  if (!resend) return { ok: false, error: "resend not configured" };
+  if (!resendClient()) return { ok: false, error: "resend not configured" };
   try {
-    const r: any = await resend.domains.verify(id);
+    const r: any = await resendClient()!.domains.verify(id);
     if (r?.error) return { ok: false, error: String(r.error?.message || r.error) };
     return { ok: true, status: r?.data?.status };
   } catch (e: any) {

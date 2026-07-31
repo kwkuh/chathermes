@@ -9,6 +9,8 @@ import * as Power from "./power";
 import { CHATHERMES, POWERED_BY, BANNER, attributionPresent } from "./_attribution";
 import * as PrivateAgent from "./private_agent";
 import * as Setup from "./setup";
+import * as Config from "./config";
+import { seedPlans, listPlans } from "./billing";
 
 // REQUIRED: attribution module guard. Removing this breaks the orchestrator.
 // See LICENSE.md §2 and src/_attribution.ts.
@@ -1747,6 +1749,124 @@ app.get("/api/me/models", requireUser, (c) => {
 });
 
 // ============================================================
+// PLANS — pricing is data, not code
+// ============================================================
+
+app.get("/api/admin/plans", requireAdmin, (c) => c.json({ plans: DB.listPlanRows() }));
+
+app.post("/api/admin/plans", requireAdmin, async (c) => {
+  const b = await c.req.json<any>().catch(() => ({}));
+  const id = String(b.id ?? "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  if (!id) return c.json({ error: "id is required (letters, numbers, dash, underscore)" }, 400);
+  if (DB.getPlanRow(id)) return c.json({ error: `Plan "${id}" already exists` }, 409);
+  const row = DB.upsertPlanRow({
+    id, name: String(b.name ?? id), price_cents: Number(b.price_cents ?? 0),
+    currency: b.currency, interval: b.interval, stripe_price_id: b.stripe_price_id,
+    features: JSON.stringify(b.features ?? []), limits: JSON.stringify(b.limits ?? {}),
+    sort: Number(b.sort ?? 99), enabled: b.enabled === false ? 0 : 1,
+  });
+  DB.logActivity(c.get("user").id, "plan.create", { id });
+  return c.json({ plan: row });
+});
+
+app.put("/api/admin/plans/:id", requireAdmin, async (c) => {
+  const id = c.req.param("id");
+  const existing = DB.getPlanRow(id);
+  if (!existing) return c.json({ error: "Plan not found" }, 404);
+  const b = await c.req.json<any>().catch(() => ({}));
+  const price = Number(b.price_cents ?? existing.price_cents);
+  if (!Number.isFinite(price) || price < 0) return c.json({ error: "price_cents must be zero or more" }, 400);
+  const row = DB.upsertPlanRow({
+    id,
+    name: String(b.name ?? existing.name),
+    price_cents: Math.round(price),
+    currency: b.currency ?? existing.currency,
+    interval: b.interval ?? existing.interval,
+    stripe_price_id: b.stripe_price_id ?? existing.stripe_price_id,
+    features: b.features !== undefined ? JSON.stringify(b.features) : existing.features,
+    limits: b.limits !== undefined ? JSON.stringify(b.limits) : existing.limits,
+    sort: b.sort !== undefined ? Number(b.sort) : existing.sort,
+    // "free" is where unsubscribed users land, so it cannot be switched off.
+    enabled: id === "free" ? 1 : (b.enabled === false ? 0 : 1),
+  });
+  DB.logActivity(c.get("user").id, "plan.update", { id, price_cents: row.price_cents });
+  return c.json({ plan: row });
+});
+
+app.delete("/api/admin/plans/:id", requireAdmin, (c) => {
+  const id = c.req.param("id");
+  if (id === "free") return c.json({ error: "The free plan cannot be deleted" }, 400);
+  const subs = (DB.db.query("SELECT COUNT(*) as n FROM subscriptions WHERE plan = ? AND status = 'active'").get(id) as any)?.n ?? 0;
+  if (subs > 0) return c.json({ error: `${subs} active subscriber(s) are on this plan — move them first` }, 409);
+  DB.deletePlanRow(id);
+  DB.logActivity(c.get("user").id, "plan.delete", { id });
+  return c.json({ ok: true });
+});
+
+// ============================================================
+// CONFIG — keys and toggles that used to require editing .env
+// ============================================================
+
+const CONFIG_FIELDS: { key: string; group: string; label: string; hint?: string }[] = [
+  { key: "SITE_NAME", group: "General", label: "Site name" },
+  { key: "PUBLIC_BASE_URL", group: "General", label: "Public URL", hint: "Used in emails and Stripe redirects" },
+  { key: "EMAIL_PROVIDER", group: "Email", label: "Provider", hint: "resend, smtp, or empty to disable email" },
+  { key: "RESEND_API_KEY", group: "Email", label: "Resend API key" },
+  { key: "RESEND_FROM", group: "Email", label: "From address" },
+  { key: "RESEND_REPLY_TO", group: "Email", label: "Reply-to address" },
+  { key: "SMTP_HOST", group: "Email", label: "SMTP host", hint: "Any provider: Postmark, SES, Mailgun, your own" },
+  { key: "SMTP_PORT", group: "Email", label: "SMTP port", hint: "587 for STARTTLS, 465 for TLS" },
+  { key: "SMTP_USER", group: "Email", label: "SMTP username" },
+  { key: "SMTP_PASS", group: "Email", label: "SMTP password" },
+  { key: "SMTP_SECURE", group: "Email", label: "Use TLS on connect", hint: "1 for port 465, 0 for 587" },
+  { key: "SMTP_FROM", group: "Email", label: "SMTP from address" },
+  { key: "STRIPE_SECRET_KEY", group: "Billing", label: "Stripe secret key" },
+  { key: "STRIPE_WEBHOOK_SECRET", group: "Billing", label: "Stripe webhook secret" },
+  { key: "STRIPE_PUBLISHABLE_KEY", group: "Billing", label: "Stripe publishable key" },
+  { key: "CHATHERMES_MODEL_RATES", group: "Credits", label: "Per-model rates", hint: 'JSON, e.g. {"openai/gpt-5":6}' },
+  { key: "CHATHERMES_DEFAULT_RATE", group: "Credits", label: "Default rate" },
+  { key: "REPLICATE_API_TOKEN", group: "Tools", label: "Replicate token", hint: "Image generation" },
+  { key: "GEMINI_API_KEY", group: "Tools", label: "Gemini key", hint: "Image analysis" },
+  { key: "OPENAI_API_KEY", group: "Tools", label: "OpenAI key", hint: "Vision fallback" },
+  { key: "HETZNER_API_TOKEN", group: "Infrastructure", label: "Hetzner token", hint: "Private agent provisioning" },
+  { key: "AUTO_PROVISION_PRIVATE_AGENT", group: "Infrastructure", label: "Auto-provision agents", hint: "1 to spawn without admin approval" },
+];
+
+// Secrets are returned masked. An admin can tell whether a key is set and
+// recognise which one it is, but the panel never hands back a usable value.
+app.get("/api/admin/config", requireAdmin, (c) => {
+  const fields = CONFIG_FIELDS.map((f) => {
+    const raw = Config.get(f.key);
+    const secret = Config.isSecretKey(f.key);
+    return {
+      ...f,
+      secret,
+      source: Config.sourceOf(f.key),
+      value: secret ? Config.maskSecret(raw) : raw,
+      set: raw !== null && raw !== "",
+    };
+  });
+  return c.json({ fields });
+});
+
+app.put("/api/admin/config/:key", requireAdmin, async (c) => {
+  const key = c.req.param("key");
+  if (!CONFIG_FIELDS.some((f) => f.key === key)) return c.json({ error: "Unknown config key" }, 400);
+  const b = await c.req.json<{ value?: string | null }>().catch(() => ({}));
+  const value = b.value === null || b.value === undefined ? "" : String(b.value);
+  Config.set(key, value);
+  // Never log the value itself.
+  DB.logActivity(c.get("user").id, "config.update", { key, cleared: value === "" });
+  return c.json({ ok: true, source: Config.sourceOf(key) });
+});
+
+// Checks the transport without sending — SMTP misconfiguration is otherwise
+// only discovered when a user fails to receive a magic link.
+app.post("/api/admin/email/verify-transport", requireAdmin, async (c) => {
+  return c.json(await Email.verifyTransport());
+});
+
+// ============================================================
 // FIRST-RUN SETUP — see setup.ts for why this is token-gated
 // ============================================================
 
@@ -1919,6 +2039,7 @@ console.log("");
 // Required Attribution per LICENSE.md — DO NOT REMOVE
 console.log(BANNER);
 console.log(`ChatHermes orchestrator listening on :${PORT}`);
+seedPlans();
 Setup.printSetupBanner(PUBLIC_BASE_URL);
 console.log(`Public: ${PUBLIC_BASE_URL}`);
 
