@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import ChatLauncher from "./_components/chat-launcher";
 import HeroIntro from "./_components/hero-intro";
 import LiveSwarm from "./_components/live-swarm";
@@ -8,7 +9,20 @@ import LivePreview from "./_components/live-preview";
 import HermesGlyph from "./_components/hermes-glyph";
 import { TiltImage, HoverPopImage, SparkleField, FadeUpOnView } from "./_components/interactive-image";
 
+// A fresh install has no admin and no model, so the landing page is not the
+// useful thing to show — send the operator to the setup wizard instead. If the
+// orchestrator is unreachable we fall through rather than blocking the page.
+async function setupNeeded(): Promise<boolean> {
+  try {
+    const orch = process.env.ORCH_URL ?? "http://127.0.0.1:7010";
+    const r = await fetch(`${orch}/api/setup/status`, { cache: "no-store", signal: AbortSignal.timeout(2500) });
+    if (!r.ok) return false;
+    return !!(await r.json()).needed;
+  } catch { return false; }
+}
+
 export default async function Landing() {
+  if (await setupNeeded()) redirect("/setup");
   // Auto-detect if user is signed in (cookie present + non-empty)
   const c = await cookies();
   const sid = c.get("ch_sid")?.value;

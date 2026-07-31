@@ -8,6 +8,7 @@ import * as Email from "./email";
 import * as Power from "./power";
 import { CHATHERMES, POWERED_BY, BANNER, attributionPresent } from "./_attribution";
 import * as PrivateAgent from "./private_agent";
+import * as Setup from "./setup";
 
 // REQUIRED: attribution module guard. Removing this breaks the orchestrator.
 // See LICENSE.md §2 and src/_attribution.ts.
@@ -1745,6 +1746,54 @@ app.get("/api/me/models", requireUser, (c) => {
   return c.json({ models: models.map((m: any) => ({ id: m.id, model_id: m.model_id, label: m.label, provider: m.provider_name, default: !!m.is_default })) });
 });
 
+// ============================================================
+// FIRST-RUN SETUP — see setup.ts for why this is token-gated
+// ============================================================
+
+// Public, but deliberately only a boolean: it tells the web app whether to send
+// the operator to /setup. It never reveals the token.
+app.get("/api/setup/status", (c) => c.json({ needed: !Setup.isSetupComplete() }));
+
+// Every mutating setup route refuses once setup is done, so a completed install
+// cannot be re-claimed.
+function setupGuard(c: any) {
+  if (Setup.isSetupComplete()) return c.json({ error: "Setup already completed" }, 410);
+  return null;
+}
+
+app.post("/api/setup/verify", async (c) => {
+  const blocked = setupGuard(c); if (blocked) return blocked;
+  const b = await c.req.json<{ token?: string }>().catch(() => ({}));
+  if (!Setup.verifySetupToken(b.token ?? "")) return c.json({ error: "Invalid setup token" }, 401);
+  return c.json({ ok: true });
+});
+
+app.post("/api/setup/test-llm", async (c) => {
+  const blocked = setupGuard(c); if (blocked) return blocked;
+  const b = await c.req.json<any>().catch(() => ({}));
+  if (!Setup.verifySetupToken(b.token ?? "")) return c.json({ error: "Invalid setup token" }, 401);
+  if (!b.base_url || !b.model_id) return c.json({ error: "base_url and model_id are required" }, 400);
+  const r = await Setup.testLlm({ base_url: b.base_url, api_key: b.api_key ?? "", model_id: b.model_id });
+  return c.json(r);
+});
+
+app.post("/api/setup/complete", async (c) => {
+  const blocked = setupGuard(c); if (blocked) return blocked;
+  const b = await c.req.json<any>().catch(() => ({}));
+  if (!Setup.verifySetupToken(b.token ?? "")) return c.json({ error: "Invalid setup token" }, 401);
+  try {
+    const { userId } = Setup.completeSetup(b);
+    // Sign the operator straight in — asking them to go find a magic link in the
+    // orchestrator log right after they proved server access is friction for
+    // nothing.
+    const sid = DB.createSession(userId);
+    setCookie(c, "ch_sid", sid, { httpOnly: true, sameSite: "Lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
+    return c.json({ ok: true });
+  } catch (e) {
+    return c.json({ error: (e as Error).message }, 400);
+  }
+});
+
 // Public banner readable (no auth needed)
 app.get("/api/system/banner", (c) => c.json({ banner: DB.getSetting("banner") ?? null }));
 
@@ -1870,6 +1919,7 @@ console.log("");
 // Required Attribution per LICENSE.md — DO NOT REMOVE
 console.log(BANNER);
 console.log(`ChatHermes orchestrator listening on :${PORT}`);
+Setup.printSetupBanner(PUBLIC_BASE_URL);
 console.log(`Public: ${PUBLIC_BASE_URL}`);
 
 app.get("/api/admin/activity", requireAdmin, (c) => {

@@ -276,6 +276,26 @@ runcmd:
         </div>
       </section>
 
+      {/* FIRST RUN */}
+      <section className="px-6 sm:px-10 pb-16 max-w-[900px] mx-auto">
+        <h2 className="font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] tracking-[-0.02em] mb-3">First run</h2>
+        <p className="text-paper-dim text-[15.5px] leading-[1.6] mb-5 max-w-[68ch]">
+          Open the address in a browser. A fresh install sends you straight to a setup form —
+          admin account, site name, and one model. No config files to edit by hand.
+        </p>
+        <p className="text-paper-dim text-[15.5px] leading-[1.6] mb-4 max-w-[68ch]">
+          The form asks for a token first. It is printed on first boot and written to
+          <code className="text-paper"> $DATA_ROOT/setup.token</code>. That is deliberate:
+          without it, anyone who found a fresh box before you did could claim it as admin.
+        </p>
+        <CodeBlock code={`docker logs chathermes | grep -A2 "SETUP REQUIRED"
+# or, without Docker:
+cat data/setup.token`} />
+        <p className="text-paper-faint text-[13.5px] leading-[1.6] mt-3">
+          Finishing setup signs you in, deletes the token, and closes the form for good.
+        </p>
+      </section>
+
       {/* AFTER */}
       <section className="px-6 sm:px-10 pb-20 max-w-[900px] mx-auto">
         <h2 className="font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] tracking-[-0.02em] mb-4">Once it is up</h2>

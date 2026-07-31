@@ -1,10 +1,19 @@
 "use client";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PoweredByChatHermes } from "@/app/_components/powered-by";
 
 function LoginInner() {
+  // Signing in is impossible before setup created the first admin, so an
+  // un-set-up install sends the operator to the wizard instead of a dead form.
+  useEffect(() => {
+    fetch("/api/setup/status", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { if (d?.needed) window.location.replace("/setup"); })
+      .catch(() => {});
+  }, []);
+
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [devLink, setDevLink] = useState<string | null>(null);
